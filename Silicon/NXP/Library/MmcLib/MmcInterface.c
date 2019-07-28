@@ -67,6 +67,7 @@ IsCardReadOnly (
   IN  VOID          *BaseAddress
   )
 {
+#if 0
   SDXC_REGS         *Regs;
 
   Regs = BaseAddress;
@@ -77,6 +78,9 @@ IsCardReadOnly (
     DEBUG ((DEBUG_ERROR, "SD/MMC : Write Protection PIN is high\n"));
     return TRUE;
   }
+#else
+  return FALSE;
+#endif
 }
 
 /**
