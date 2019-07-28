@@ -74,10 +74,10 @@
 #define PCI_SEG_BUSNUM_MIN        0x0
 #define PCI_SEG_BUSNUM_MAX        0xff
 #define PCI_SEG_PORTIO_MAX        0xffff
-#define PCI_SEG_MMIO32_MIN        0x40000000
-#define PCI_SEG_MMIO32_MAX        0x4fffffff
-#define PCI_SEG_MMIO32_DIFF       0x10000000
-#define PCI_SEG_MMIO64_MAX_DIFF   0x3fffffff
+#define PCI_SEG_MMIO32_MIN        0x40000000UL
+#define PCI_SEG_MMIO32_MAX        0x4fffffffUL
+#define PCI_SEG_MMIO32_DIFF       0x08000000UL
+#define PCI_SEG_MMIO64_MAX_DIFF   0x3fffffffUL
 #define SEG_CFG_SIZE              0x00001000
 #define SEG_CFG_BUS               0x00000000
 #define SEG_MEM_SIZE              0x40000000
