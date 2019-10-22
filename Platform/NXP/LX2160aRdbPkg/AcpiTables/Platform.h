@@ -163,4 +163,10 @@
 #define TIMER_WDT1_IT                108
 
 #define DEFAULT_PLAT_FREQ            700000000
+
+// Mcfg
+#define LX2160A_PCI_SEG0_CONFIG_BASE 0x9000000000
+#define LX2160A_PCI_SEG0             0x0
+#define LX2160A_PCI_SEG_BUSNUM_MIN   0x0
+#define LX2160A_PCI_SEG_BUSNUM_MAX   0xff
 #endif
