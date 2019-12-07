@@ -132,7 +132,7 @@
   #
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2Initialize|TRUE
   gNxpQoriqLsTokenSpaceGuid.PcdDisableMcLogging|FALSE
-  gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McFwSrc|0x01
+  gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McFwSrc|0x03
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McBootTimeoutMs|200000
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2UsedDpmacsMask|0xff00ff
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McLogMcDramOffset|0x1000000
