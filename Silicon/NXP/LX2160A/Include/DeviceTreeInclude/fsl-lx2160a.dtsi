@@ -443,10 +443,14 @@
     };
 
     emdio2: mdio@0x8B97000 { /* WRIOP0: 0x8B8_0000, E-MDIO2: 0x1_7000 */
-	inphi_phy: ethernet-phy@0 {
-                compatible = "ethernet-phy-id0210.7440";
-                reg = <0x0>;
-	};
+      compatible = "fsl,fman-memac-mdio";
+      reg = <0x0 0x8B97000 0x0 0x1000>;
+      device_type = "mdio";      /* TODO: is this necessary? */
+      little-endian;  /* force the driver in LE mode */
+
+      /* Not necessary on the QDS, but needed on the RDB */
+      #address-cells = <1>;
+      #size-cells = <0>;
     };
 
     pcs_mdio3: mdio@0x8c0f000 {
