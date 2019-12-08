@@ -49,7 +49,7 @@
 #include <DeviceTreeInclude/fsl-lx2160a.dtsi>
 
 / {
-  model = "NXP Layerscape LX2160A COM express type 7 module";
+  model = "SolidRun LX2160A COM express type 7 module";
   compatible = "fsl,lx2160a-cex7", "fsl,lx2160a";
 
   aliases {
@@ -59,52 +59,212 @@
     serial2 = &uart2;
     serial3 = &uart3;
   };
+
   chosen {
     stdout-path = "serial0:115200n8";
   };
 
-  soc {
-    pcie@3600000 {
-      status = "okay";
+  gpio-keys {
+    compatible = "gpio-keys";
+    key {
+      label = "power";
+      linux,can-disable;
+      linux,code = <116>;
+      gpios = <&gpio2 6 1>;
     };
+  };
 
-    pcie@3800000 {
-      status = "okay";
-    };
+  sb_3v3: regulator-sb3v3 {
+    compatible = "regulator-fixed";
+    regulator-name = "RT7290";
+    regulator-min-microvolt = <3300000>;
+    regulator-max-microvolt = <3300000>;
+    regulator-boot-on;
+    regulator-always-on;
+  };
+
+  sfp0: sfp-0 {
+    compatible = "sff,sfp";
+    i2c-bus = <&sfp0_i2c>;
+    mod-def0-gpio = <&gpio2 0 1>;
+  };
+  sfp1: sfp-1 {
+    compatible = "sff,sfp";
+    i2c-bus = <&sfp1_i2c>;
+    mod-def0-gpio = <&gpio2 9 1>;
+  };
+  sfp2: sfp-2 {
+    compatible = "sff,sfp";
+    i2c-bus = <&sfp2_i2c>;
+    mod-def0-gpio = <&gpio2 10 1>;
+  };
+  sfp3: sfp-3 {
+    compatible = "sff,sfp";
+    i2c-bus = <&sfp3_i2c>;
+    mod-def0-gpio = <&gpio2 11 1>;
   };
 };
 
-&uart0 {
+&crypto {
   status = "okay";
 };
 
-&uart1 {
+&dpmac3 {
+  fixed-link {
+    speed = <10000>;
+    full-duplex;
+  };
+};
+
+&dpmac4 {
+  fixed-link {
+    speed = <10000>;
+    full-duplex;
+  };
+};
+
+&dpmac5 {
+  fixed-link {
+    speed = <10000>;
+    full-duplex;
+  };
+};
+
+&dpmac6 {
+  fixed-link {
+    speed = <10000>;
+    full-duplex;
+  };
+};
+
+&dpmac7 {
+  sfp = <&sfp0>;
+  managed = "in-band-status";
+};
+
+&dpmac8 {
+  sfp = <&sfp1>;
+  managed = "in-band-status";
+};
+
+&dpmac9 {
+  sfp = <&sfp2>;
+  managed = "in-band-status";
+};
+
+&dpmac10 {
+  sfp = <&sfp3>;
+  managed = "in-band-status";
+};
+
+&dpmac17 {
+	phy-handle = <&rgmii_phy1>;
+	phy-connection-type = "rgmii-id";
+};
+
+&dpmac18 {
+  status = "disabled";
+};
+
+&emdio1 {
+  rgmii_phy1: ethernet-phy@1 {
+    /* AR8035 PHY - "compatible" property not strictly needed */
+    compatible = "ethernet-phy-id004d.d072";
+    reg = <0x1>;
+    /* Poll mode - no "interrupts" property defined */
+  };
+};
+
+&emdio2 {
   status = "okay";
+};
+
+&esdhc0 {
+  sd-uhs-sdr104;
+  sd-uhs-sdr50;
+  sd-uhs-sdr25;
+  sd-uhs-sdr12;
+  status = "okay";
+};
+
+&esdhc1 {
+  mmc-hs200-1_8v;
+  mmc-hs400-1_8v;
+  bus-width = <8>;
+  status = "okay";
+};
+
+&fspi {
+  status = "okay";
+//  nxp,fspi-has-second-chip;
+  uefi-runtime;
+
+  flash0: mt35xu512aba@0 {
+    #address-cells = <1>;
+    #size-cells = <1>;
+    compatible = "micron,m25p80";
+    m25p,fast-read;
+    spi-max-frequency = <50000000>;
+    reg = <0>;
+    /* The following setting enables 1-1-8 (CMD-ADDR-DATA) mode */
+    spi-rx-bus-width = <8>; /* 8 SPI Rx lines */
+    spi-tx-bus-width = <1>; /* 1 SPI Tx line */
+    uefi-runtime;
+  };
+
 };
 
 &i2c0 {
   status = "okay";
-  pca9547@77 {
-    compatible = "nxp,pca9548";
+
+  i2c-mux@77 {
+    compatible = "nxp,pca9547";
     reg = <0x77>;
     #address-cells = <1>;
     #size-cells = <0>;
 
-
+    i2c@1 {
+      #address-cells = <1>;
+      #size-cells = <0>;
+      reg = <0x1>;
+      fan-temperature-ctrlr@18 {
+        compatible = "ti,amc6821";
+        reg = <0x18>;
+        cooling-min-state = <0>;
+        cooling-max-state = <9>;
+        #cooling-cells = <2>;
+      };
+    };
     i2c@3 {
       #address-cells = <1>;
       #size-cells = <0>;
       reg = <0x3>;
 
-      sa56004@4c {
+      temperature-sensor@48 {
         compatible = "nxp,sa56004";
-        reg = <0x4c>;
+        reg = <0x48>;
+        vcc-supply = <&sb_3v3>;
       };
-
-      sa56004@4d {
-        compatible = "nxp,sa56004";
-        reg = <0x4d>;
-      };
+    };
+    sfp0_i2c: i2c@4 {
+      #address-cells = <1>;
+      #size-cells = <0>;
+      reg = <0x4>;
+    };
+    sfp1_i2c: i2c@5 {
+      #address-cells = <1>;
+      #size-cells = <0>;
+      reg = <0x5>;
+    };
+    sfp2_i2c: i2c@6 {
+      #address-cells = <1>;
+      #size-cells = <0>;
+      reg = <0x6>;
+    };
+    sfp3_i2c: i2c@7 {
+      #address-cells = <1>;
+      #size-cells = <0>;
+      reg = <0x7>;
     };
   };
 };
@@ -145,6 +305,83 @@
   status = "disabled";
 };
 
+&pcie2 {
+#if 0
+  compatible = "pci-host-ecam-generic", "snps,dw-pcie-ecam";
+  reg = <0x90 0x00000000 0 0x10000000>;
+  bus-range = <0x0 0xff>;
+  ranges = <0x1000000 0x00 0x00020000 0x90 0x00020000 0x0 0x00010000>,
+           <0x2000000 0x00 0x50000000 0x00 0x50000000 0x0 0x10000000>,
+           <0x3000000 0x90 0x40000000 0x90 0x40000000 0x0 0x40000000>;
+#endif
+  status = "disabled";
+};
+
+&pcie4 {
+  iommu-map = <0 &smmu 0 0>;
+  msi-map-mask = <0xfff>;
+  status = "disabled";
+#if 0
+  compatible = "pci-host-ecam-generic";
+  reg = <0xa0 0x00000000 0 0x10000000>;
+  bus-range = <0x0 0xff>;
+  status = "okay";
+  ranges = <0x1000000 0x00 0x00000000 0xa0 0x10000000 0x0 0x00010000>,
+           <0x2000000 0x00 0x60000000 0x00 0x60000000 0x0 0x10000000>,
+           <0x3000000 0xa0 0x40000000 0xa0 0x40000000 0x0 0x40000000>;
+  bus-range = <0x0 0xff>;
+  reg = <0xa0 0x00000000 0 0x10000000>;
+  ranges = <0x1000000 0x00 0x00000000 0xa0 0x10000000 0x0 0x00010000>,
+           <0x2000000 0x00 0x60000000 0x00 0x60000000 0x0 0x10000000>,
+           <0x3000000 0xa0 0x40000000 0xa0 0x40000000 0x0 0x40000000>;
+
+  pcie@0001 {
+    /* Root port 00:01.0 is external-facing */
+    reg = <0x00000100 0 0 0 0>;
+  };
+#endif
+};
+
+&pcs_mdio5 {
+	pcs_phy7: ethernet-phy@0 {
+		compatible = "ethernet-phy-ieee802.3-c45";
+		backplane-mode = "10gbase-kr";
+		reg = <0x0>;
+		fsl,lane-handle = <&serdes1>;
+		fsl,lane-reg = <0xB00 0x100>; /* lane D */
+	};
+};
+
+&pcs_mdio6 {
+	pcs_phy8: ethernet-phy@0 {
+		compatible = "ethernet-phy-ieee802.3-c45";
+		backplane-mode = "10gbase-kr";
+		reg = <0x0>;
+		fsl,lane-handle = <&serdes1>;
+		fsl,lane-reg = <0xA00 0x100>; /* lane C */
+	};
+};
+
+&pcs_mdio7 {
+	pcs_phy9: ethernet-phy@0 {
+		compatible = "ethernet-phy-ieee802.3-c45";
+		backplane-mode = "10gbase-kr";
+		reg = <0x0>;
+		fsl,lane-handle = <&serdes1>;
+		fsl,lane-reg = <0x900 0x100>; /* lane B */
+	};
+};
+
+&pcs_mdio8 {
+	pcs_phy10: ethernet-phy@0 {
+		compatible = "ethernet-phy-ieee802.3-c45";
+		backplane-mode = "10gbase-kr";
+		reg = <0x0>;
+		fsl,lane-handle = <&serdes1>;
+		fsl,lane-reg = <0x800 0x100>; /* lane A */
+	};
+};
+
 &sata0 {
   status = "okay";
 };
@@ -161,6 +398,14 @@
   status = "okay";
 };
 
+&uart0 {
+  status = "okay";
+};
+
+&uart1 {
+  status = "okay";
+};
+
 &usb0 {
   status = "okay";
 };
@@ -168,158 +413,3 @@
 &usb1 {
   status = "okay";
 };
-
-&esdhc0 {
-  sd-uhs-sdr104;
-  sd-uhs-sdr50;
-  sd-uhs-sdr25;
-  sd-uhs-sdr12;
-  status = "okay";
-};
-
-&esdhc1 {
-  mmc-hs200-1_8v;
-  mmc-hs400-1_8v;
-  bus-width = <8>;
-  status = "okay";
-};
-
-&fspi {
-  status = "okay";
-//  nxp,fspi-has-second-chip;
-  uefi-runtime;
-
-  flash0: mt35xu512aba@0 {
-    #address-cells = <1>;
-    #size-cells = <1>;
-    compatible = "micron,m25p80";
-    m25p,fast-read;
-    spi-max-frequency = <50000000>;
-    reg = <0>;
-    /* The following setting enables 1-1-8 (CMD-ADDR-DATA) mode */
-    spi-rx-bus-width = <8>; /* 8 SPI Rx lines */
-    spi-tx-bus-width = <1>; /* 1 SPI Tx line */
-    uefi-runtime;
-  };
-
-};
-
-&crypto {
-  status = "okay";
-};
-
-&emdio1 {
-  rgmii_phy1: ethernet-phy@1 {
-    /* AR8035 PHY - "compatible" property not strictly needed */
-    compatible = "ethernet-phy-id004d.d072";
-    reg = <0x1>;
-    /* Poll mode - no "interrupts" property defined */
-  };
-  rgmii_phy2: ethernet-phy@2 {
-    /* AR8035 PHY - "compatible" property not strictly needed */
-    compatible = "ethernet-phy-id004d.d072";
-    reg = <0x2>;
-    /* Poll mode - no "interrupts" property defined */
-  };
-  aquantia_phy3: ethernet-phy@3 {
-    /* AQR107 PHY - "compatible" property not strictly needed */
-    compatible = "ethernet-phy-ieee802.3-c45";
-    reg = <0x4>;
-    /* Poll mode - no "interrupts" property defined */
-  };
-  aquantia_phy4: ethernet-phy@4 {
-    /* AQR107 PHY - "compatible" property not strictly needed */
-    compatible = "ethernet-phy-ieee802.3-c45";
-    reg = <0x5>;
-    /* Poll mode - no "interrupts" property defined */
-  };
-};
-
-&emdio2 {
-  inphi_phy: emdio2_phy@0 {
-    compatible = "ethernet-phy-ieee802.3-c45";
-    reg = <0x0>;
-    dev-addr = <0x1e>;
-    phy-connection-type = "xfi";
-    interrupts = <0 9 0x2>, <0 10 0x2>; /* high-to-low edge triggered */
-  };
-};
-&pcs_mdio5 {
-	pcs_phy7: ethernet-phy@0 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		backplane-mode = "10gbase-kr";
-		reg = <0x0>;
-		fsl,lane-handle = <&serdes1>;
-		fsl,lane-reg = <0xB00 0x100>; /* lane D */
-	};
-};
-&pcs_mdio6 {
-	pcs_phy8: ethernet-phy@0 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		backplane-mode = "10gbase-kr";
-		reg = <0x0>;
-		fsl,lane-handle = <&serdes1>;
-		fsl,lane-reg = <0xA00 0x100>; /* lane C */
-	};
-};
-&pcs_mdio7 {
-	pcs_phy9: ethernet-phy@0 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		backplane-mode = "10gbase-kr";
-		reg = <0x0>;
-		fsl,lane-handle = <&serdes1>;
-		fsl,lane-reg = <0x900 0x100>; /* lane B */
-	};
-};
-&pcs_mdio8 {
-	pcs_phy10: ethernet-phy@0 {
-		compatible = "ethernet-phy-ieee802.3-c45";
-		backplane-mode = "10gbase-kr";
-		reg = <0x0>;
-		fsl,lane-handle = <&serdes1>;
-		fsl,lane-reg = <0x800 0x100>; /* lane A */
-	};
-};
-&dpmac3 {
-//	phy-handle = <&pcs_phy3>;
-};
-&dpmac4 {
-//	phy-handle = <&pcs_phy4>;
-};
-&dpmac5 {
-//	phy-handle = <&pcs_phy5>;
-};
-&dpmac6 {
-//	phy-handle = <&pcs_phy6>;
-};
-&dpmac7 {
-	phy-handle = <&pcs_phy7>;
-};
-&dpmac8 {
-	phy-handle = <&pcs_phy8>;
-};
-&dpmac9 {
-	phy-handle = <&pcs_phy9>;
-};
-&dpmac10 {
-	phy-handle = <&pcs_phy10>;
-};
-
-&dpmac17 {
-	phy-handle = <&rgmii_phy1>;
-	phy-connection-type = "rgmii-id";
-};
-
-&dpmac18 {
-  phy-handle = <&rgmii_phy2>;
-  phy-connection-type = "rgmii-id";
-};
-
-&can0 {
-  status = "okay";
-};
-
-&can1 {
-  status = "okay";
-};
-
