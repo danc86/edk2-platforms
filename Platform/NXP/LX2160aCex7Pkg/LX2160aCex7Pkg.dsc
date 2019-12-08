@@ -186,6 +186,7 @@
   gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x8010004F
   }
   MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
+  MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
 
   Silicon/NXP/Drivers/LanIntelE1000Dxe/LanIntelE1000Dxe.inf
 
