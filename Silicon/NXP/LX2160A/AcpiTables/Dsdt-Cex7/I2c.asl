@@ -51,6 +51,7 @@ Scope(_SB)
     }) // end of _CRS for i2c0 device
     Method(_INI, 0, NotSerialized) {
       Store(\_SB.PCLK.CLK, CLK)
+      Divide(CLK, 8, Local0, CLK)
     }
     Name (_DSD, Package () {
       ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
@@ -109,78 +110,7 @@ Scope(_SB)
     }) // end of _CRS for i2c1 device
     Method(_INI, 0, NotSerialized) {
       Store(\_SB.PCLK.CLK, CLK)
-    }
-    Name (_DSD, Package () {
-      ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-      Package () {
-         Package () {"clock-frequency", CLK},
-      }
-    })
-  } // end of i2c device
-
-  Device(I2C2) {
-    Name(_HID, "NXP0001")
-    Name(_UID, 2)
-    Name(CLK, 0)
-    Name(_CRS, ResourceTemplate() {
-      Memory32Fixed(ReadWrite, I2C2_BASE, I2C_LEN)
-      Interrupt(ResourceConsumer, Level, ActiveHigh, Shared) { I2C2_IT }
-    }) // end of _CRS for i2c2 device
-    Method(_INI, 0, NotSerialized) {
-      Store(\_SB.PCLK.CLK, CLK)
-    }
-    Name (_DSD, Package () {
-      ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-      Package () {
-         Package () {"clock-frequency", CLK},
-      }
-    })
-  } // end of i2c device
-
-  Device(I2C3) {
-    Name(_HID, "NXP0001")
-    Name(_UID, 3)
-    Name(_CRS, ResourceTemplate() {
-      Memory32Fixed(ReadWrite, I2C3_BASE, I2C_LEN)
-      Interrupt(ResourceConsumer, Level, ActiveHigh, Shared) { I2C3_IT }
-    }) // end of _CRS for i2c3 device
-    Name (_DSD, Package () {
-      ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-      Package () {
-         Package () {"clock-frequency", DEFAULT_PLAT_FREQ}, //This is device specific data, Need to see how to pass clk stuff
-      }
-    })
-  } // end of i2c device
-
-  Device(I2C4) {
-    Name(_HID, "NXP0001")
-    Name(_UID, 4)
-    Name(CLK, 0)
-    Name(_CRS, ResourceTemplate() {
-      Memory32Fixed(ReadWrite, I2C4_BASE, I2C_LEN)
-      Interrupt(ResourceConsumer, Level, ActiveHigh, Shared) { I2C4_IT }
-    }) // end of _CRS for i2c4 device
-    Method(_INI, 0, NotSerialized) {
-      Store(\_SB.PCLK.CLK, CLK)
-    }
-    Name (_DSD, Package () {
-      ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-      Package () {
-         Package () {"clock-frequency", CLK},
-      }
-    })
-  } // end of i2c device
-
-  Device(I2C5) {
-    Name(_HID, "NXP0001")
-    Name(_UID, 5)
-    Name(CLK, 0)
-    Name(_CRS, ResourceTemplate() {
-      Memory32Fixed(ReadWrite, I2C5_BASE, I2C_LEN)
-      Interrupt(ResourceConsumer, Level, ActiveHigh, Shared) { I2C5_IT }
-    }) // end of _CRS for i2c5 device
-    Method(_INI, 0, NotSerialized) {
-      Store(\_SB.PCLK.CLK, CLK)
+      Divide(CLK, 8, Local0, CLK)
     }
     Name (_DSD, Package () {
       ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
