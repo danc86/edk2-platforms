@@ -519,13 +519,13 @@ ConstructHostInstance (
 
   Status = gBS->InstallMultipleProtocolInterfaces (
              &Handle,
-             &gEfiMmcHostProtocolGuid,
+             &gEmbeddedMmcHostProtocolGuid,
              &MmcHostInstance->MmcHostProtocol,
              NULL
              );
 
   if (EFI_ERROR(Status)) {
-    DEBUG ((DEBUG_ERROR, "Failed to install gEfiMmcHostProtocolGuid on %d \n",
+    DEBUG ((DEBUG_ERROR, "Failed to install gEmbeddedMmcHostProtocolGuid on %d \n",
       MmcHostInstance->CardType));
   }
 
@@ -553,7 +553,7 @@ CreateMmcHostInstance (
 }
 
 /**
-  Function to install MMC Host Protocol gEfiMmcHostProtocolGuid
+  Function to install MMC Host Protocol gEmbeddedMmcHostProtocolGuid
 **/
 EFI_STATUS
 MmcHostDxeEntryPoint (
