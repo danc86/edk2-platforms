@@ -9,6 +9,7 @@
 #ifndef __NXP_MCFG_REMAPPING_TABLE_H__
 #define __NXP_MCFG_REMAPPING_TABLE_H__
 
+#include <IndustryStandard/Acpi.h>
 #include <IndustryStandard/MemoryMappedConfigurationSpaceAccessTable.h>
 
 #pragma pack(1)
