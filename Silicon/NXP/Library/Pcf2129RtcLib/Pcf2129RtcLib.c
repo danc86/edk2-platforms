@@ -190,12 +190,21 @@ LibGetTime (
   }
 
   Time->Nanosecond = 0;
-  Time->Second  = BcdToDecimal8 (Regs.Seconds & 0x7F);
-  Time->Minute  = BcdToDecimal8 (Regs.Minutes & 0x7F);
-  Time->Hour = BcdToDecimal8 (Regs.Hours & 0x3F);
-  Time->Day = BcdToDecimal8 (Regs.Days & 0x3F);
-  Time->Month  = BcdToDecimal8 (Regs.Months & 0x1F);
-  Time->Year = BcdToDecimal8 (Regs.Years) + ( BcdToDecimal8 (Regs.Years) >= 98 ? 1900 : 2000);
+  if (Regs.Seconds & BIT7) {
+    Time->Second = 0;
+    Time->Minute = 0;
+    Time->Hour = 1;
+    Time->Day = 1;
+    Time->Month = 1;
+    Time->Year = 2000;
+  } else {
+    Time->Second  = BcdToDecimal8 (Regs.Seconds & 0x7F);
+    Time->Minute  = BcdToDecimal8 (Regs.Minutes & 0x7F);
+    Time->Hour = BcdToDecimal8 (Regs.Hours & 0x3F);
+    Time->Day = BcdToDecimal8 (Regs.Days & 0x3F);
+    Time->Month  = BcdToDecimal8 (Regs.Months & 0x1F);
+    Time->Year = BcdToDecimal8 (Regs.Years) + ( BcdToDecimal8 (Regs.Years) >= 98 ? 1900 : 2000);
+  }
 
   if (FixedPcdGetBool (PcdIsRtcDeviceMuxed)) {
     // Switch to the default channel
