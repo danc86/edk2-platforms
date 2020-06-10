@@ -15,7 +15,7 @@
 DefinitionBlock("DsdtTable.aml", "DSDT", 1, "NXP  ", "LX2160  ", EFI_ACPI_ARM_OEM_REVISION) {
   include ("../Dsdt/Com.asl")
   include ("../Dsdt/CPU.asl")
-  include ("../Dsdt/Clk.asl")
+  include ("Clk.asl")
   include ("../Dsdt/Esdhc.asl")
   include ("../Dsdt/FSPI.asl")
   include ("../Dsdt/Ftm.asl")
