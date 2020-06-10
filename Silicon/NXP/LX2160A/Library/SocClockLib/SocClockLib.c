@@ -15,7 +15,7 @@
 #include <Soc.h>
 #include <Library/IoLib.h>
 #include <Library/DebugLib.h>
-#include <Library/FpgaLib.h>
+#include <Library/BoardInfoLib.h>
 #include <Library/SocClockLib.h>
 
 #include "SocClockInternalLib.h"

@@ -47,7 +47,7 @@
   SerialPortLib|ArmPlatformPkg/Library/PL011SerialPortLib/PL011SerialPortLib.inf
   SocLib|Silicon/NXP/Chassis/LX2160aSocLib.inf
   RealTimeClockLib|Silicon/NXP/Library/Pcf2129RtcMmLib/Pcf2129RtcLib.inf
-  FpgaLib|Platform/NXP/LX2160aRdbPkg/Library/FpgaLib/FpgaLib.inf
+  BoardInfoLib|Platform/NXP/LX2160aRdbPkg/Library/BoardInfoLib/BoardInfoLib.inf
   PciSegmentLib|Silicon/NXP/Library/PciSegmentLib/PciSegmentLib.inf
   PciHostBridgeLib|Silicon/NXP/Library/PciHostBridgeLib/PciHostBridgeLib.inf
   MmcLib|Silicon/NXP/Library/MmcLib/MmcLib.inf

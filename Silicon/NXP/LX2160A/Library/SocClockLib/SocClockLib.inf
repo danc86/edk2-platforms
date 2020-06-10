@@ -32,9 +32,9 @@
   Silicon/NXP/Chassis/Chassis3V2/Chassis3V2.dec
 
 [LibraryClasses]
-  IoLib
+  BoardInfoLib
   DebugLib
-  FpgaLib
+  IoLib
 
 [FixedPcd]
   gNxpQoriqLsTokenSpaceGuid.PcdGutsBaseAddr

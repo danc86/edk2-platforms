@@ -35,10 +35,10 @@
 [LibraryClasses]
   ArmSmcLib
   BaseLib
-  IoAccessLib
+  BoardInfoLib
   DebugLib
-  FpgaLib
   I2cLib
+  IoAccessLib
   SerialPortLib
   SocClockLib
 
