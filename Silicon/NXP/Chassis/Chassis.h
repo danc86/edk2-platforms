@@ -47,7 +47,7 @@ CpuMaskNext (
 #define CPU_TYPE_ENTRY(N, V, NC) \
            { .Name = #N, .SocVer = SVR_##V, .NumCores = (NC)}
 
-#define SVR_WO_E                    0xFFFFFE
+#define SVR_WO_E                    0xFFFFEE
 #define SVR_LS1043A                 0x879200
 #define SVR_LS1046A                 0x870700
 #define SVR_LS2088A                 0x870901
