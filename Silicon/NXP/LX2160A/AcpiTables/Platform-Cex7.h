@@ -161,8 +161,8 @@
 #define TMU_SITES_MAX             7           // Max TMU remote sensor
 #define TMU_ACTIVE                0           // Cooling policy active
 #define TMU_PASSIVE               1           // Cooling policy passive
-#define TMU_PASSIVE_THERSHOLD     3582        // Passive Thershold (85C)
-#define TMU_CRITICAL_THERSHOLD    3682        // Critical Thershold (95C)
+#define TMU_PASSIVE_THERSHOLD     3282        // Passive Thershold (54.8C)
+#define TMU_CRITICAL_THERSHOLD    3682        // Critical Thershold (94.8C)
 #define TMU_ACTIVE_LOW_THERSHOLD  3232        // Active low Thershold (50C)
 #define TMU_ACTIVE_HIGH_THERSHOLD 3432        // Active high Thershold (70C)
 #define TMU_TIER_DISABLE_ALL      0x00        // Disable all interrupt
@@ -183,13 +183,9 @@
 #define TMU_ENGINEERING_MODE_0    0x51009C00  // TEUMR0 register
 #define TMU_ENGINEERING_MODE_2    0x0800FFFE  // TEUMR2 register
 #define TMU_FAN_1                 1           // FAN 1
-#define TMU_FAN_2                 2           // FAN 2
-#define TMU_FAN_3                 3           // FAN 3
-#define TMU_FAN_4                 4           // FAN 4
-#define TMU_FAN_5                 5           // FAN 5
-#define TMU_FAN_OFF_SPEED         0x80        // FAN off speed value at 50% PWM (Default)
-#define TMU_FAN_LOW_SPEED         0xBF        // FAN low speed value at 75% PWM
-#define TMU_FAN_HIGH_SPEED        0xF0        // FAN high speed value at 95% PWM
+#define TMU_FAN_OFF_SPEED         0x55        // FAN off speed value at 33% PWM (Default)
+#define TMU_FAN_LOW_SPEED         0x80        // FAN low speed value at 50% PWM
+#define TMU_FAN_HIGH_SPEED        0xFF        // FAN high speed value at 100% PWM
 
 // DSPI
 #define SPI0_BASE 0x2100000
