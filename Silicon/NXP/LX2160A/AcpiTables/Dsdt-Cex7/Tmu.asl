@@ -123,20 +123,22 @@ Scope(_SB.I2C0)
     Return (STAT)
   }
 
-// Method to read temerature from remote sensor
+// Method to read temperature from remote sensor
   Method (STMP, 1, Serialized) {
     Store(Zero, Local0)
-    If (LEqual(Arg0, Zero)) {
-      SCHN(I2C0_MUX_CHANNEL_1) //FAN CONTROLLER SENSOR
-      Store(One, LEN)
-      Store(FLD3, BUFF)
-    } Else {
-      SCHN(I2C0_MUX_CHANNEL_3) //SA56004AD
-      Store(One, LEN)
-      Store(FLD1, BUFF)
-    }
-    If (LEqual(STAT, 0x00)) {
-      Local0 = DATA
+    If (LEqual (\_SB.I2C0.AVBL, One)) {
+      If (LEqual(Arg0, Zero)) {
+        SCHN(I2C0_MUX_CHANNEL_1) //FAN CONTROLLER SENSOR
+        Store(One, LEN)
+        Store(FLD3, BUFF)
+      } Else {
+        SCHN(I2C0_MUX_CHANNEL_3) //SA56004AD
+        Store(One, LEN)
+        Store(FLD1, BUFF)
+      }
+      If (LEqual(STAT, 0x00)) {
+        Local0 = DATA
+      }
     }
     Return (Local0)
   }
@@ -666,11 +668,13 @@ Scope(_TZ)
     Name(_AL1, Package() { FAN0 })
     
     Method(_SCP, 1) {
-      \_SB.I2C0.FSEL(1)
-      If (Arg0) {
-        Store(1, PLC7)
-      } Else {
-        Store(0, PLC7)
+      If (LEqual (\_SB.I2C0.AVBL, One)) {
+        \_SB.I2C0.FSEL(1)
+        If (Arg0) {
+          Store(1, PLC7)
+        } Else {
+          Store(0, PLC7)
+        }
       }
     }
 
