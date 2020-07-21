@@ -71,7 +71,6 @@
   #
   NULL|ArmPkg/Library/CompilerIntrinsicsLib/CompilerIntrinsicsLib.inf
 
-  FpgaLib|Platform/NXP/LX2160aRdbPkg/Library/FpgaLib/FpgaLib.inf
   SocClockLib|Silicon/NXP/LX2160A/Library/SocClockLib/SocClockLib.inf
   I2cLib|Silicon/NXP/Library/I2cLib/I2cLib.inf
 
