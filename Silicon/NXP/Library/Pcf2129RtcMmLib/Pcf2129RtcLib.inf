@@ -40,7 +40,7 @@
   gEfiSmmPcf2129ProtocolGuid
 
 [Protocols]
-  gEfiSmmCommunicationProtocolGuid     ## CONSUMES
+  gEfiMmCommunication2ProtocolGuid     ## CONSUMES
 
 [Depex]
-  gEfiSmmCommunicationProtocolGuid
+  gEfiMmCommunication2ProtocolGuid

@@ -29,11 +29,11 @@
 #include <Library/UefiRuntimeLib.h>
 
 #include <Protocol/Pcf2129Mm.h>
-#include <Protocol/SmmCommunication.h>
+#include <Protocol/MmCommunication2.h>
 
 #define BOOTTIME_DEBUG(x)       do { if (!EfiAtRuntime()) DEBUG (x); } while (0)
 
-STATIC EFI_SMM_COMMUNICATION_PROTOCOL  *mSmmCommunication        = NULL;
+STATIC EFI_MM_COMMUNICATION2_PROTOCOL  *mMmCommunication2        = NULL;
 STATIC UINT8                           *mPcf2129Header           = NULL;
 STATIC EFI_EVENT                  mRtcVirtualAddrChangeEvent;
 
@@ -88,22 +88,25 @@ LibGetTime (
 {
   EFI_STATUS                          Status;
   UINTN                               CommSize;
-  EFI_SMM_COMMUNICATE_HEADER          *SmmCommunicateHeader;
+  EFI_MM_COMMUNICATE_HEADER           *SmmCommunicateHeader;
   SMM_PCF2129_COMMUNICATE_HEADER      *SmmPcf2129Header;
 
   Status = EFI_SUCCESS;
 
-  if (mPcf2129Header == NULL || mSmmCommunication == NULL) {
+  if (mPcf2129Header == NULL || mMmCommunication2 == NULL) {
     return EFI_DEVICE_ERROR;
   }
 
   CommSize = sizeof (SMM_PCF2129_COMMUNICATE_HEADER) + sizeof (EFI_MM_COMMUNICATE_HEADER);
 
-  SmmCommunicateHeader = (EFI_SMM_COMMUNICATE_HEADER *)mPcf2129Header;
+  SmmCommunicateHeader = (EFI_MM_COMMUNICATE_HEADER *)mPcf2129Header;
   SmmPcf2129Header = (SMM_PCF2129_COMMUNICATE_HEADER *)SmmCommunicateHeader->Data;
   SmmPcf2129Header->Function = FUNCTION_GET_TIME;
 
-  Status = mSmmCommunication->Communicate(mSmmCommunication, mPcf2129Header, &CommSize);
+  Status = mMmCommunication2->Communicate(mMmCommunication2,
+                                          mPcf2129Header,
+                                          mPcf2129Header,
+                                          &CommSize);
   ASSERT_EFI_ERROR (Status);
 
   if (EFI_ERROR (SmmPcf2129Header->ReturnStatus)) {
@@ -113,13 +116,22 @@ LibGetTime (
 
   // hours, minutes and seconds
   Time->Nanosecond = 0;
-  Time->Second  = BcdToDecimal8 (SmmPcf2129Header->Regs.Seconds & 0x7F);
-  Time->Minute  = BcdToDecimal8 (SmmPcf2129Header->Regs.Minutes & 0x7F);
-  Time->Hour = BcdToDecimal8 (SmmPcf2129Header->Regs.Hours & 0x3F);
-  Time->Day = BcdToDecimal8 (SmmPcf2129Header->Regs.Days & 0x3F);
-  Time->Month  = BcdToDecimal8 (SmmPcf2129Header->Regs.Months & 0x1F);
-  Time->Year = BcdToDecimal8 (SmmPcf2129Header->Regs.Years) + \
-               ( BcdToDecimal8 (SmmPcf2129Header->Regs.Years) >= 98 ? 1900 : 2000);
+  if (SmmPcf2129Header->Regs.Seconds & BIT7) {
+    Time->Second = 0;
+    Time->Minute = 0;
+    Time->Hour = 1;
+    Time->Day = 1;
+    Time->Month = 1;
+    Time->Year = 2000;
+  } else {
+    Time->Second  = BcdToDecimal8 (SmmPcf2129Header->Regs.Seconds & 0x7F);
+    Time->Minute  = BcdToDecimal8 (SmmPcf2129Header->Regs.Minutes & 0x7F);
+    Time->Hour = BcdToDecimal8 (SmmPcf2129Header->Regs.Hours & 0x3F);
+    Time->Day = BcdToDecimal8 (SmmPcf2129Header->Regs.Days & 0x3F);
+    Time->Month  = BcdToDecimal8 (SmmPcf2129Header->Regs.Months & 0x1F);
+    Time->Year = BcdToDecimal8 (SmmPcf2129Header->Regs.Years) + \
+                 ( BcdToDecimal8 (SmmPcf2129Header->Regs.Years) >= 98 ? 1900 : 2000);
+  }
 
   return SmmPcf2129Header->ReturnStatus;
 }
@@ -143,16 +155,16 @@ LibSetTime (
 {
   EFI_STATUS                          Status;
   UINTN                               CommSize;
-  EFI_SMM_COMMUNICATE_HEADER          *SmmCommunicateHeader;
+  EFI_MM_COMMUNICATE_HEADER           *SmmCommunicateHeader;
   SMM_PCF2129_COMMUNICATE_HEADER      *SmmPcf2129Header;
 
   Status = EFI_SUCCESS;
 
-  if (mPcf2129Header == NULL || mSmmCommunication == NULL) {
+  if (mPcf2129Header == NULL || mMmCommunication2 == NULL) {
     return EFI_DEVICE_ERROR;
   }
 
-  SmmCommunicateHeader = (EFI_SMM_COMMUNICATE_HEADER *)mPcf2129Header;
+  SmmCommunicateHeader = (EFI_MM_COMMUNICATE_HEADER *)mPcf2129Header;
   SmmPcf2129Header = (SMM_PCF2129_COMMUNICATE_HEADER *)SmmCommunicateHeader->Data;
   SmmPcf2129Header->Function = FUNCTION_SET_TIME;
 
@@ -167,7 +179,10 @@ LibSetTime (
 
   CommSize = sizeof (SMM_PCF2129_COMMUNICATE_HEADER) + sizeof (EFI_MM_COMMUNICATE_HEADER);
 
-  Status = mSmmCommunication->Communicate(mSmmCommunication, mPcf2129Header, &CommSize);
+  Status = mMmCommunication2->Communicate(mMmCommunication2,
+                                          mPcf2129Header,
+                                          mPcf2129Header,
+                                          &CommSize);
   ASSERT_EFI_ERROR (Status);
 
   if (EFI_ERROR (SmmPcf2129Header->ReturnStatus)) {
@@ -240,7 +255,7 @@ LibRtcVirtualNotifyEvent (
   IN VOID             *Context
   )
 {
-  EfiConvertPointer (0x0, (VOID **)&mSmmCommunication);
+  EfiConvertPointer (0x0, (VOID **)&mMmCommunication2);
   EfiConvertPointer (0x0, (VOID **)&mPcf2129Header);
 }
 
@@ -265,9 +280,9 @@ LibRtcInitialize (
 
   EFI_STATUS                    Status;
   UINTN                         Pcf2129HeaderSize;
-  EFI_SMM_COMMUNICATE_HEADER    *SmmCommunicateHeader;
+  EFI_MM_COMMUNICATE_HEADER     *SmmCommunicateHeader;
 
-  Status = gBS->LocateProtocol (&gEfiSmmCommunicationProtocolGuid, NULL, (VOID **) &mSmmCommunication);
+  Status = gBS->LocateProtocol (&gEfiMmCommunication2ProtocolGuid, NULL, (VOID **) &mMmCommunication2);
   ASSERT_EFI_ERROR (Status);
   //
   // Allocate memory for Pcf2129 communicate buffer.
@@ -282,7 +297,7 @@ LibRtcInitialize (
 
   ASSERT (mPcf2129Header != NULL);
 
-  SmmCommunicateHeader = (EFI_SMM_COMMUNICATE_HEADER *)mPcf2129Header;
+  SmmCommunicateHeader = (EFI_MM_COMMUNICATE_HEADER *)mPcf2129Header;
   CopyGuid (&SmmCommunicateHeader->HeaderGuid, &gEfiSmmPcf2129ProtocolGuid);
   SmmCommunicateHeader->MessageLength = sizeof (SMM_PCF2129_COMMUNICATE_HEADER);
 
