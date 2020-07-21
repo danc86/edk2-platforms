@@ -1,0 +1,29 @@
+#  @BoardInfoLib.inf
+#
+#  Copyright 2018, 2020 NXP
+#  This program and the accompanying materials
+#  are licensed and made available under the terms and conditions of the BSD License
+#  which accompanies this distribution.  The full text of the license may be found at
+#  http://opensource.org/licenses/bsd-license.php
+#
+#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = BoardInfoLib
+  FILE_GUID                      = 1cccbae0-ab16-11ea-bb37-0242ac130002
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = BoardInfoLib
+
+[Sources.common]
+  BoardInfoLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Platform/SolidRun/LX2160aCex7/LX2160aCex7.dec
+
+[LibraryClasses]
+  BaseLib
