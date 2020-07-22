@@ -10,7 +10,7 @@
 
 **/
 
-#include "Platform.h"
+#include "Platform-Cex7.h"
 
 DefinitionBlock("DsdtTable.aml", "DSDT", 1, "NXP  ", "LX2160  ", EFI_ACPI_ARM_OEM_REVISION) {
   include ("../Dsdt/Com.asl")
