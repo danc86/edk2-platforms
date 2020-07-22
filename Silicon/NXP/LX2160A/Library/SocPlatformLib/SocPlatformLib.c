@@ -80,7 +80,7 @@ SocSetPciRootPort (
   GurBase = (VOID *)PcdGet64 (PcdGutsBaseAddr);
   Svr = GurRead ((UINTN)&GurBase->Svr);
 
-  if ((Svr & SVR_LX2160A_REV_MASK) == SVR_LX2160A_REV2) {
+  if (((Svr & SVR_LX2160A_REV_MASK) >> 8) == SVR_LX2160A) {
     PcdSetBool(PcdPciHideRootPort, TRUE);
   }
 }

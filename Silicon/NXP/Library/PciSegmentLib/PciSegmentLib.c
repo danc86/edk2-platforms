@@ -131,6 +131,7 @@ PciLsGen4GetConfigBase (
   )
 {
   UINT32 Target;
+  UINT64 ConfigOffset;
 
   if (Bus) {
     PciLsGen4SetBusMaster (PCI_SEG0_DBI_BASE + PCI_DBI_SIZE_DIFF* Segment);
@@ -138,6 +139,10 @@ PciLsGen4GetConfigBase (
     Target = ((((Address >> 20) & 0xFF) << 24) |
              (((Address >> 15) & 0x1F) << 19) |
              (((Address >> 12) & 0x7) << 16));
+
+    ConfigOffset = PCI_SEG0_MMIO_MEMBASE + PCI_BASE_DIFF * Segment + (Address & 0xFFFFF000);
+    if (MmioRead32(ConfigOffset) != 0xFFFFFFFF)
+      return ConfigOffset + Offset;
 
     PcieCfgSetTarget ((PCI_SEG0_DBI_BASE + PCI_DBI_SIZE_DIFF* Segment), Target);
     return PCI_SEG0_MMIO_MEMBASE + Offset + PCI_BASE_DIFF * Segment;

@@ -39,6 +39,9 @@ typedef struct __LS_PCIE {
   /// Next Available Look Up Table entry Index
   ///
   INT32          NextLutIndex;
+  /// Next Available IATU Window
+  ///
+  INT8            NextIatuIndex;
   ///
   /// The stream id index corresponding to BusDevFunc for
   /// this PCIE controller.

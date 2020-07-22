@@ -338,7 +338,7 @@ PcieOutboundSet (
 {
   if (PCI_LS_GEN4_CTRL) {
     UINT32 Val;
-    Size = ~(Size -1 );
+    Size = ~(Size - 1);
 
     // Mapping AXI transactions to PEX address
     Val = CcsrRead32 ((UINTN)Dbi, PAB_AXI_AMAP_CTRL (Idx));
@@ -365,7 +365,6 @@ PcieOutboundSet (
     CcsrWrite32 ((UINTN)Dbi, PAB_AXI_AMAP_PEX_WIN_H (Idx), BusAddr >> 32);
     // Program the size of window
     CcsrWrite32 ((UINTN)Dbi, PAB_EXT_AXI_AMAP_SIZE (Idx), Size >> 32);
-
   } else {
     MmioWrite32 (Dbi + IATU_VIEWPORT_OFF,
                 (UINT32)(IATU_VIEWPORT_OUTBOUND | Idx));
@@ -506,10 +505,26 @@ IsPcieNumEnabled(
   return FALSE;
 }
 
+/**
+  Return next available IATU Window index.
+ **/
+STATIC
+INT32
+PcieNextIatuIndex (
+ IN  LS_PCIE   *LsPcie
+ )
+{
+  if (LsPcie->NextIatuIndex < 256) {
+    return LsPcie->NextIatuIndex++;
+  } else {
+    return -1;;  /* No more windows */
+  }
+}
+
 STATIC
 VOID
 PcieSetupWindow (
-  IN EFI_PHYSICAL_ADDRESS Pcie,
+  IN LS_PCIE *LsPcie,
   IN EFI_PHYSICAL_ADDRESS Cfg0Base,
   IN EFI_PHYSICAL_ADDRESS Cfg1Base,
   IN EFI_PHYSICAL_ADDRESS MemBase,
@@ -517,29 +532,31 @@ PcieSetupWindow (
   IN EFI_PHYSICAL_ADDRESS IoBase
   )
 {
+  EFI_PHYSICAL_ADDRESS Pcie = LsPcie->ControllerAddress;
+
   // ATU : OUTBOUND WINDOW 1 : CFG0
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX0,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                          PAB_AXI_TYPE_CFG,
                          Cfg0Base,
                          SEG_CFG_BUS,
                          SEG_CFG_SIZE);
 
   // ATU : OUTBOUND WINDOW 2 : IO
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX1,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                          PAB_AXI_TYPE_IO,
                          IoBase,
                          SEG_IO_BUS,
                          SEG_IO_SIZE);
 
   // ATU : OUTBOUND WINDOW 3 : MEM
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX2,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                          PAB_AXI_TYPE_MEM,
                          MemBase,
                          SEG_MEM_BUS,
                          SEG_MEM_SIZE);
 
   // ATU : OUTBOUND WINDOW 4 : MMIO64
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX3,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             PAB_AXI_TYPE_MEM,
                             Mem64Base,
                             Mem64Base,
@@ -547,7 +564,7 @@ PcieSetupWindow (
   Mem64Base += SIZE_4GB;
 
   // ATU : OUTBOUND WINDOW 5 : MMIO64
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX4,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             PAB_AXI_TYPE_MEM,
                             Mem64Base,
                             Mem64Base,
@@ -555,7 +572,7 @@ PcieSetupWindow (
   Mem64Base += SIZE_4GB;
 
   // ATU : OUTBOUND WINDOW 6 : MMIO64
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX5,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             PAB_AXI_TYPE_MEM,
                             Mem64Base,
                             Mem64Base,
@@ -563,7 +580,7 @@ PcieSetupWindow (
   Mem64Base += SIZE_4GB;
 
   // ATU : OUTBOUND WINDOW 7 : MMIO64
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX6,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             PAB_AXI_TYPE_MEM,
                             Mem64Base,
                             Mem64Base,
@@ -571,7 +588,7 @@ PcieSetupWindow (
 
   if (FeaturePcdGet (PcdPciDebug) == TRUE) {
     INTN Cnt;
-    for (Cnt = 0; Cnt <= IATU_REGION_INDEX2; Cnt++) {
+    for (Cnt = 0; Cnt < LsPcie->NextIatuIndex; Cnt++) {
       DEBUG ((DEBUG_INFO,"APIO WINDOW%d:\n", Cnt));
       DEBUG ((DEBUG_INFO,"\tLOWER PHYS 0x%08x\n",
               CcsrRead32 ((UINTN)Pcie, PAB_AXI_AMAP_AXI_WIN (Cnt))));
@@ -604,7 +621,7 @@ PcieSetupWindow (
 STATIC
 VOID
 PcieSetupAtu (
-  IN EFI_PHYSICAL_ADDRESS Pcie,
+  IN LS_PCIE *LsPcie,
   IN EFI_PHYSICAL_ADDRESS Cfg0Base,
   IN EFI_PHYSICAL_ADDRESS Cfg1Base,
   IN EFI_PHYSICAL_ADDRESS MemBase,
@@ -618,6 +635,7 @@ PcieSetupAtu (
   UINT64 Cfg1BusAddress;
   UINT64 Cfg0Size;
   UINT64 Cfg1Size;
+  EFI_PHYSICAL_ADDRESS Pcie = LsPcie->ControllerAddress;
 
   if (CFG_SHIFT_ENABLE) {
     DEBUG ((DEBUG_INFO, "PCIe: CFG Shit Method Enabled \n"));
@@ -643,7 +661,7 @@ PcieSetupAtu (
   //
   // iATU : OUTBOUND WINDOW 1 : CFG0
   //
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX0,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             IATU_REGION_CTRL_1_OFF_OUTBOUND_0_TYPE_CFG0,
                             Cfg0BaseAddr,
                             Cfg0BusAddress,
@@ -651,7 +669,7 @@ PcieSetupAtu (
 
   //
   // iATU : OUTBOUND WINDOW 2 : CFG1
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX1,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             IATU_REGION_CTRL_1_OFF_OUTBOUND_0_TYPE_CFG1,
                             Cfg1BaseAddr,
                             Cfg1BusAddress,
@@ -660,7 +678,7 @@ PcieSetupAtu (
   //
   // iATU : OUTBOUND WINDOW 3 : MEM
   //
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX2,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             IATU_REGION_CTRL_1_OFF_OUTBOUND_0_TYPE_MEM,
                             MemBase,
                             SEG_MEM_BUS,
@@ -669,7 +687,7 @@ PcieSetupAtu (
   //
   // iATU : OUTBOUND WINDOW 4 : MMIO64
   //
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX3,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             IATU_REGION_CTRL_1_OFF_OUTBOUND_0_TYPE_MEM,
                             Mem64Base,
                             Mem64Base,
@@ -679,7 +697,7 @@ PcieSetupAtu (
   //
   // iATU : OUTBOUND WINDOW 5 : MMIO64
   //
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX4,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             IATU_REGION_CTRL_1_OFF_OUTBOUND_0_TYPE_MEM,
                             Mem64Base,
                             Mem64Base,
@@ -689,7 +707,7 @@ PcieSetupAtu (
   //
   // iATU : OUTBOUND WINDOW 6 : MMIO64
   //
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX5,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             IATU_REGION_CTRL_1_OFF_OUTBOUND_0_TYPE_MEM,
                             Mem64Base,
                             Mem64Base,
@@ -699,7 +717,7 @@ PcieSetupAtu (
   //
   // iATU : OUTBOUND WINDOW 7 : MMIO64
   //
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX6,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
                             IATU_REGION_CTRL_1_OFF_OUTBOUND_0_TYPE_MEM,
                             Mem64Base,
                             Mem64Base,
@@ -709,7 +727,7 @@ PcieSetupAtu (
   //
   // iATU : OUTBOUND WINDOW 8: IO
   //
-  PcieOutboundSet (Pcie, IATU_REGION_INDEX7,
+  PcieOutboundSet (Pcie, PcieNextIatuIndex(LsPcie),
           IATU_REGION_CTRL_1_OFF_OUTBOUND_0_TYPE_IO,
           IoBase,
           SEG_IO_BUS,
@@ -730,7 +748,7 @@ PcieSetupAtu (
 STATIC
 VOID
 PcieSetupCntrl (
-  IN EFI_PHYSICAL_ADDRESS Pcie,
+  IN LS_PCIE *LsPcie,
   IN EFI_PHYSICAL_ADDRESS Cfg0Base,
   IN EFI_PHYSICAL_ADDRESS Cfg1Base,
   IN EFI_PHYSICAL_ADDRESS MemBase,
@@ -739,6 +757,7 @@ PcieSetupCntrl (
   )
 {
   UINT32 Val;
+  EFI_PHYSICAL_ADDRESS Pcie = LsPcie->ControllerAddress;
 
   if (PCI_LS_GEN4_CTRL) {
 
@@ -768,7 +787,7 @@ PcieSetupCntrl (
     }
 
     PciSetupInBoundWin (Pcie, 0, PAB_AXI_TYPE_MEM, 0 , 0, SIZE_1TB);
-    PcieSetupWindow (Pcie, Cfg0Base, Cfg1Base, MemBase, Mem64Base, IoBase);
+    PcieSetupWindow (LsPcie, Cfg0Base, Cfg1Base, MemBase, Mem64Base, IoBase);
 
     // Enable AMBA & PEX PIO
     // PEX PIO is used to generate PIO traffic from PCIe Link to AXI
@@ -786,7 +805,7 @@ PcieSetupCntrl (
     //
     // iATU outbound set-up
     //
-    PcieSetupAtu (Pcie, Cfg0Base, Cfg1Base, MemBase, Mem64Base, IoBase);
+    PcieSetupAtu (LsPcie, Cfg0Base, Cfg1Base, MemBase, Mem64Base, IoBase);
 
     //
     // program correct class for RC
@@ -1210,6 +1229,61 @@ IortPcieSetUp (
   return EFI_SUCCESS;
 }
 
+STATIC
+VOID
+PcieCfgSetTarget (
+  IN EFI_PHYSICAL_ADDRESS Dbi,
+  IN UINT32 Target,
+  IN UINT8 Window)
+{
+  CcsrWrite32 ((UINTN)Dbi, PAB_AXI_AMAP_PEX_WIN_L(Window), Target);
+  CcsrWrite32 ((UINTN)Dbi, PAB_AXI_AMAP_PEX_WIN_H(Window), 0);
+}
+
+/**
+  Program a single LUT entry
+ **/
+STATIC
+VOID
+PciLsGen4SetConfigMapping (
+  IN LS_PCIE *LsPcie,
+  IN UINTN   Segment,
+  IN UINTN   BusNumber,
+  IN UINTN   DeviceNumber,
+  IN UINTN   FunctionNumber
+  )
+{
+  UINT64 ConfigOffset;
+  UINT32 Address;
+  UINT32 Target;
+  UINT16 Id;
+
+  Address = ((BusNumber << 20) | (DeviceNumber << 15) | (FunctionNumber << 12));
+  Target = ((BusNumber << 24) | (DeviceNumber << 19) | (FunctionNumber << 16));
+  Id = PcieNextIatuIndex(LsPcie);
+
+  ConfigOffset = PCI_SEG0_MMIO_MEMBASE + (PCI_BASE_DIFF * Segment) + Address;
+  PcieOutboundSet ((PCI_SEG0_DBI_BASE + PCI_DBI_SIZE_DIFF * Segment),
+                   Id, PAB_AXI_TYPE_CFG,
+                   ConfigOffset, SEG_CFG_BUS, SEG_CFG_SIZE);
+  PcieCfgSetTarget ((PCI_SEG0_DBI_BASE + PCI_DBI_SIZE_DIFF * Segment), Target,
+                    Id);
+}
+
+STATIC
+VOID
+PciLsGen4DisableRootCfg (
+  IN LS_PCIE *LsPcie,
+  IN UINTN   Segment
+  )
+{
+  UINT32 Val;
+
+  Val = CcsrRead32 ((UINTN)(PCI_SEG0_DBI_BASE + PCI_DBI_SIZE_DIFF * Segment), PAB_AXI_AMAP_CTRL(0));
+  CcsrWrite32 ((UINTN)(PCI_SEG0_DBI_BASE + PCI_DBI_SIZE_DIFF * Segment),
+               PAB_AXI_AMAP_CTRL(0), Val &= ~(1 << 0));
+}
+
 /**
   This notification function is invoked when an instance of the
   EFI_PCI_IO_PROTOCOL is produced.  It searches the devices on the IO
@@ -1309,6 +1383,8 @@ OnPlatformHasPciIo (
     // Function  PCI Function number. Range 0..7.
     BusDevFuc = ((BusNumber & 0xff) << 8) | ((DeviceNumber & 0x1f) << 3) | (FunctionNumber & 0x07);
     if (BusDevFuc == 0) {
+      if (PCI_LS_GEN4_CTRL)
+        PciLsGen4DisableRootCfg (&LsPcie[SegmentNumber], SegmentNumber);
       // For RC, already fixup has been applied.
       continue;
     }
@@ -1330,6 +1406,10 @@ OnPlatformHasPciIo (
     if (EFI_ERROR (Status) && Status != EFI_NOT_FOUND) {
       break;
     }
+
+    if (PCI_LS_GEN4_CTRL)
+      PciLsGen4SetConfigMapping (&LsPcie[SegmentNumber], SegmentNumber,
+                                 BusNumber, DeviceNumber, FunctionNumber);
 
     if (PcdGet64 (PcdIortTablePtr) != 0) {
       Status = IortPcieSetUp ((VOID *)PcdGet64 (PcdIortTablePtr), SegmentNumber,
@@ -1482,6 +1562,7 @@ PciHostBridgeGetRootBridges (
     //
     LsPcie[Idx].ControllerAddress = Regs;
     LsPcie[Idx].NextLutIndex = 0;
+    LsPcie[Idx].NextIatuIndex = 0;
     LsPcie[Idx].LsPcieLut = (LS_PCIE_LUT *)(Regs + PCI_LUT_BASE);
     LsPcie[Idx].ControllerIndex = Idx;
     LsPcie[Idx].CurrentStreamId = 0;
@@ -1534,7 +1615,7 @@ PciHostBridgeGetRootBridges (
     // Function to set up address translation unit outbound window for
     // PCIe Controller
     //
-    PcieSetupCntrl (Regs,
+    PcieSetupCntrl (&LsPcie[Idx],
                     PciPhyCfg0Addr,
                     PciPhyCfg1Addr,
                     PciPhyMemAddr,
