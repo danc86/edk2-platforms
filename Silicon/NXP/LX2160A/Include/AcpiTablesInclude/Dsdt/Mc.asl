@@ -42,6 +42,18 @@ Scope(_SB)
     Device(PR06) { // 25G
       Name (_ADR, 0x6)
     }
+    Device(PR07) { // 10G
+      Name (_ADR, 0x7)
+    }
+     Device(PR08) { // 10G
+      Name (_ADR, 0x8)
+    }
+    Device(PR09) { // 25G
+      Name (_ADR, 0x9)
+    }
+    Device(PR10) { // 25G
+      Name (_ADR, 0xa)
+    }
     Device(PR17) { // 1G
       Name (_ADR, 0x11)
     }

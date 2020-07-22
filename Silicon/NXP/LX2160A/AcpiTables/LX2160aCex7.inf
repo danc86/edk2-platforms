@@ -18,7 +18,7 @@
   VERSION_STRING                 = 1.0
 
 [Sources]
-  Dsdt/Dsdt.asl
+  Dsdt-Cex7/Dsdt.asl
   Fadt.aslc
   Gtdt.aslc
   Iort.aslc
@@ -26,8 +26,6 @@
   Mcfg.aslc
   Spcr.aslc
   Dbg2.aslc
-/*  SASSSDT.ASL
-  SATASSDT.ASL*/
 
 [Packages]
   ArmPkg/ArmPkg.dec
