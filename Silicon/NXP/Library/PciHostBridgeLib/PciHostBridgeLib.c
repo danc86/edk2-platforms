@@ -782,6 +782,11 @@ PcieSetupCntrl (
     // Programm MEM/IO/CFG window in bridge control register
     CcsrWrite32 ((UINTN)Pcie, PAB_AXI_PIO_CTRL (0), Val);
 
+    // Enable Interrupts
+    Val = PAB_INTP_INTX_MASK | PAB_INTP_MSI | PAB_INTP_RESET |
+          PAB_INTP_PCIE_UE | PAB_INTP_IE_PMREDI | PAB_INTP_IE_EC;
+    CcsrWrite32((UINTN)Pcie, PAB_INTP_AMBA_MISC_ENB, Val);
+
     if (FeaturePcdGet (PcdPciDebug) == TRUE) {
       DEBUG ((DEBUG_INFO, "Going to SetUp PCIe Space Windows\n\n"));
     }

@@ -16,8 +16,28 @@
 #ifndef __PCIE_HOST_BRIDGE_LIB_H_
 #define __PCIE_HOST_BRIDGE_LIB_H_
 
+#ifndef BIT
+#define BIT(nr)         (1 << (nr))
+#endif
+
+/* PAB Interrupt registers */
+#define PAB_INTP_AMBA_MISC_ENB          0x0b0c
+#define PAB_INTP_AMBA_MISC_STAT         0x0b1c
+#define  PAB_INTP_RESET                 BIT(1)
+#define  PAB_INTP_MSI                   BIT(3)
+#define  PAB_INTP_INTA                  BIT(5)
+#define  PAB_INTP_INTB                  BIT(6)
+#define  PAB_INTP_INTC                  BIT(7)
+#define  PAB_INTP_INTD                  BIT(8)
+#define  PAB_INTP_PCIE_UE               BIT(9)
+#define  PAB_INTP_IE_PMREDI             BIT(29)
+#define  PAB_INTP_IE_EC                 BIT(30)
+#define  PAB_INTP_MSI_MASK              PAB_INTP_MSI
+#define  PAB_INTP_INTX_MASK             (PAB_INTP_INTA | PAB_INTP_INTB | \
+                                         PAB_INTP_INTC | PAB_INTP_INTD)
+
 /* LUT registers */
-#define PCIE_LUT_ENABLE		BIT31
+#define PCIE_LUT_ENABLE		        BIT(31)
 
 typedef struct __LS_PCIE_LUT {
   UINT8        Reserved0[0x20];
