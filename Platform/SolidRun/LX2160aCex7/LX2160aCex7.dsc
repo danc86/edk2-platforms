@@ -85,6 +85,15 @@
   gEfiSecurityPkgTokenSpaceGuid.PcdOptionRomImageVerificationPolicy|0x00000004
 
   #
+  # SMBIOS entry point version
+  #
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosVersion|0x0300
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosEntryPointProvideMethod|0x2
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosDocRev|0x0
+
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiExposedTableVersions|0x20
+
+  #
   # Board Specific Pcds
   #
 
