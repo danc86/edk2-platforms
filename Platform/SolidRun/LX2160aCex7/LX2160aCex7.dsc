@@ -267,6 +267,11 @@
   Platform/SolidRun/LX2160aCex7/SystemFirmwareDescriptor/SystemFirmwareDescriptor.inf
 !endif #$(CAPSULE_ENABLE)
 
+  MdeModulePkg/Universal/Disk/UdfDxe/UdfDxe.inf
+  MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
+  EmbeddedPkg/Drivers/ConsolePrefDxe/ConsolePrefDxe.inf
+  MdeModulePkg/Application/BootManagerMenuApp/BootManagerMenuApp.inf
+
  #
  # GOP Support
  #

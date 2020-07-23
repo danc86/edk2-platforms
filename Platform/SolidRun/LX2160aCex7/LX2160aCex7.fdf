@@ -143,6 +143,8 @@ READ_LOCK_STATUS   = TRUE
   INF EmbeddedPkg/MetronomeDxe/MetronomeDxe.inf
   INF EmbeddedPkg/SimpleTextInOutSerial/SimpleTextInOutSerial.inf
 
+  INF EmbeddedPkg/Drivers/ConsolePrefDxe/ConsolePrefDxe.inf
+
   #
   # Networking stack
   #
@@ -202,6 +204,12 @@ READ_LOCK_STATUS   = TRUE
   INF FatPkg/EnhancedFatDxe/Fat.inf
 
   #
+  # Udf and RamDisk
+  #
+  INF MdeModulePkg/Universal/Disk/UdfDxe/UdfDxe.inf
+  INF MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
+
+  #
   # MMC
   #
   INF Silicon/NXP/Drivers/MmcHostDxe/MmcHostDxe.inf
@@ -220,6 +228,7 @@ READ_LOCK_STATUS   = TRUE
   #
   # Bds
   #
+  INF MdeModulePkg/Application/BootManagerMenuApp/BootManagerMenuApp.inf
   INF MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf
   INF MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
   INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
