@@ -32,33 +32,43 @@ Scope(_SB)
     //DPMACs
     Device(PR03) { // 10G
       Name (_ADR, 0x3)
+      Name (_UID, 0x3)
     }
      Device(PR04) { // 10G
       Name (_ADR, 0x4)
+      Name (_UID, 0x4)
     }
     Device(PR05) { // 25G
       Name (_ADR, 0x5)
+      Name (_UID, 0x5)
     }
     Device(PR06) { // 25G
       Name (_ADR, 0x6)
+      Name (_UID, 0x6)
     }
     Device(PR07) { // 10G
       Name (_ADR, 0x7)
+      Name (_UID, 0x7)
     }
      Device(PR08) { // 10G
       Name (_ADR, 0x8)
+      Name (_UID, 0x8)
     }
     Device(PR09) { // 25G
       Name (_ADR, 0x9)
+      Name (_UID, 0x9)
     }
     Device(PR10) { // 25G
       Name (_ADR, 0xa)
+      Name (_UID, 0xa)
     }
     Device(PR17) { // 1G
       Name (_ADR, 0x11)
+      Name (_UID, 0x11)
     }
     Device(PR18) { // 1G
       Name (_ADR, 0x12)
+      Name (_UID, 0x12)
     } // end of DPMAC
   } // end of fsl-mc device
 } // end of fsl-mc controller

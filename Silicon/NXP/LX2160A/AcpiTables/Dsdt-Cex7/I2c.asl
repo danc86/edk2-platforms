@@ -61,12 +61,14 @@ Scope(_SB)
     })
     Device(MUX0) {
       NAME(_HID, "NXP0002")
+      Name(_UID, 0)
       Name(_CRS, ResourceTemplate()
       {
         I2CSerialBus(0x77, ControllerInitiated, 100000, AddressingMode7Bit, "\\_SB.I2C0", 0, ResourceConsumer, ,)
       }) // end of CRS for mux device
      Device (CH01) {
         Name(_ADR, 1)
+        Name(_UID, 1)
         Device(FAN1) {
         Name (_HID, "PRP0001")
           Name(_CRS, ResourceTemplate() {
@@ -83,12 +85,14 @@ Scope(_SB)
      
       Device (CH03) {
         Name(_ADR, 3)
+        Name(_UID, 3)
         Device(THE1) {
-        Name (_HID, "PRP0001")
+          Name(_UID, 1)
+          Name (_HID, "PRP0001")
           Name(_CRS, ResourceTemplate() {
             I2CSerialBus(0x4A, ControllerInitiated, 100000, AddressingMode7Bit, "\\_SB.I2C0.MUX0.CH01", 0, ResourceConsumer, ,)
           })
-         Name (_DSD, Package () {
+          Name (_DSD, Package () {
                 ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
                 Package() {
                         Package() {"compatible", "nxp,sa56004"},
