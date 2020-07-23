@@ -679,7 +679,7 @@ Scope(_TZ)
     }
 
     Method(_TMP, 0, Serialized) {
-      Store(\_SB.I2C0.STMP(0), Local0)
+      Store(\_SB.I2C0.STMP(1), Local0)
       //Adjustment to linux kelvin offset(2732)
       Local0 += 273
       Local0 = Local0 * 10 + 2
