@@ -66,6 +66,12 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdInstallAcpiSdtProtocol|TRUE
   gEfiMdeModulePkgTokenSpaceGuid.PcdEnableVariableRuntimeCache|FALSE
 
+[PcdsDynamicDefault.common]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdVideoHorizontalResolution|1024
+  gEfiMdeModulePkgTokenSpaceGuid.PcdVideoVerticalResolution|768
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoHorizontalResolution|1024
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|768
+
 [PcdsFixedAtBuild.common]
 
 !if $(MC_HIGH_MEM) == TRUE                                        # Management Complex loaded at the end of DDR2
@@ -271,6 +277,9 @@
   MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
   EmbeddedPkg/Drivers/ConsolePrefDxe/ConsolePrefDxe.inf
   MdeModulePkg/Application/BootManagerMenuApp/BootManagerMenuApp.inf
+
+  Platform/SolidRun/LX2160aCex7/Logo/LogoDxe.inf
+  MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
 
  #
  # GOP Support

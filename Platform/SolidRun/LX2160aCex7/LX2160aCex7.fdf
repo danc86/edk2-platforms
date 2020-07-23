@@ -234,6 +234,8 @@ READ_LOCK_STATUS   = TRUE
   INF MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
   INF MdeModulePkg/Universal/BdsDxe/BdsDxe.inf
   INF MdeModulePkg/Application/UiApp/UiApp.inf
+  INF Platform/SolidRun/LX2160aCex7/Logo/LogoDxe.inf
+  INF MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
 
 !if $(CAPSULE_ENABLE)
   INF MdeModulePkg/Universal/EsrtDxe/EsrtDxe.inf
