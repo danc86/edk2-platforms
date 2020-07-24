@@ -235,6 +235,11 @@ Dpaa2McExit (
   VOID
   );
 
+VOID
+Dpaa2McPause (
+  VOID
+  );
+
 EFI_STATUS
 Dpaa2McDeployDpl (
   VOID

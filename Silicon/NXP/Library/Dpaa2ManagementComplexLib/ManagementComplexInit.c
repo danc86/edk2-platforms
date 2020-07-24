@@ -1594,6 +1594,29 @@ Dpaa2McExit (
   }
 }
 
+/**
+   Pause MC firmware before booting the OS
+
+   @param[in] None
+
+ **/
+VOID
+Dpaa2McPause (
+  VOID
+  )
+{
+  UINT32 RegGcr1;
+  DPAA2_MANAGEMENT_COMPLEX *Mc;
+  DPAA2_MC_CCSR *McCcsrRegs;
+
+  Mc = &gManagementComplex;
+  McCcsrRegs = Mc->McCcsrRegs;
+
+  RegGcr1 = MmioRead32 ((UINTN)&McCcsrRegs->Gcr1);
+
+  MmioWrite32 ((UINTN)&McCcsrRegs->Gcr1, RegGcr1 | GCR1_P1_STOP);
+  ArmDataMemoryBarrier ();
+}
 
 /**
  * Load the MC DPL blob to the MC private DRAM block:

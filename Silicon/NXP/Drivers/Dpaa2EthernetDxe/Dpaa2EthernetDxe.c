@@ -1392,10 +1392,15 @@ Dpaa2NotifyExitBootServices (
         FdtStatus = fdt_setprop_string (Dtb, NodeOffset, "status", "okay");
       }
       if (FdtStatus) {
-        DPAA_ERROR_MSG ("Error %a disabling Node %a\n", fdt_strerror (FdtStatus),
+        DPAA_INFO_MSG ("Error %a disabling Node %a\n", fdt_strerror (FdtStatus),
                         fdt_get_name (Dtb, NodeOffset, NULL));
       }
     }
+
+    /*
+     * Pause the MC firmware until the OS has enabled the SMMU and restarted it
+     */
+    Dpaa2McPause ();
   }
 }
 
