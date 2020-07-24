@@ -24,10 +24,10 @@
 
 [FD.LX2160aCex7_EFI]
 BaseAddress   = 0x82000000|gArmTokenSpaceGuid.PcdFdBaseAddress  #The base address of the FLASH Device.
-Size          = 0x00180000|gArmTokenSpaceGuid.PcdFdSize           #The size in bytes of the FLASH Device
+Size          = 0x00200000|gArmTokenSpaceGuid.PcdFdSize           #The size in bytes of the FLASH Device
 ErasePolarity = 1
 BlockSize     = 0x1
-NumBlocks     = 0x00180000
+NumBlocks     = 0x00200000
 
 ################################################################################
 #
@@ -44,7 +44,7 @@ NumBlocks     = 0x00180000
 # RegionType <FV, DATA, or FILE>
 #
 ################################################################################
-0x00000000|0x00180000
+0x00000000|0x00200000
 gArmTokenSpaceGuid.PcdFvBaseAddress|gArmTokenSpaceGuid.PcdFvSize
 FV = FVMAIN_COMPACT
 
@@ -245,6 +245,12 @@ READ_LOCK_STATUS   = TRUE
      SECTION UI = "Pkcs7TestRoot"
   }
 !endif
+
+FILE FREEFORM = CBF541DD-E5EE-4754-A0B7-CB484A3060C1 {
+    SECTION RAW = Silicon/NXP/QoriqMcBinary/LX2160a/mc_10.20.4_lx2160a.itb
+    SECTION RAW = Platform/SolidRun/LX2160aCex7/QoriqMcBinaryDtbs/dpc-8_x_usxgmii.dtb
+    SECTION RAW = Platform/SolidRun/LX2160aCex7/QoriqMcBinaryDtbs/dpl-eth.8x10g.19.dtb
+  }
 
   #
   # GOP support

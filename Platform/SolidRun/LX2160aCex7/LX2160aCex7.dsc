@@ -75,11 +75,11 @@
 [PcdsFixedAtBuild.common]
 
 !if $(MC_HIGH_MEM) == TRUE                                        # Management Complex loaded at the end of DDR2
-  gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McHighRamSize|0x10000000      # 2GB (must be 512MB aligned)
+  gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McHighRamSize|0x20000000      # 2GB (must be 512MB aligned)
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McLowRamSize|0x0
   gNxpQoriqLsTokenSpaceGuid.PcdMcHighMemSupport|1
   gArmTokenSpaceGuid.PcdSystemMemoryBase|0x0080000000             # Actual base
-  gArmTokenSpaceGuid.PcdSystemMemorySize|0x000BE00000             # 2G - 66MB (ATF)
+  gArmTokenSpaceGuid.PcdSystemMemorySize|0x001BE00000             # 2G - 66MB (ATF)
 !else
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McHighRamSize|0x0             # 512MB (Fixed)
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McLowRamSize|0x20000000       # 512MB (Fixed)
@@ -154,9 +154,9 @@
   #
   # DPAA2 Pcds
   #
-  gNxpQoriqLsTokenSpaceGuid.PcdDpaa2Initialize|FALSE
+  gNxpQoriqLsTokenSpaceGuid.PcdDpaa2Initialize|TRUE
   gNxpQoriqLsTokenSpaceGuid.PcdDisableMcLogging|FALSE
-  gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McFwSrc|0x01
+  gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McFwSrc|0x02
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McBootTimeoutMs|200000
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2UsedDpmacsMask|0xff00ff
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McLogMcDramOffset|0x1000000
