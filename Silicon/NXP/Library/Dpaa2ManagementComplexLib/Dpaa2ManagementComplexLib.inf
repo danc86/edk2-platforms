@@ -29,6 +29,7 @@
 [LibraryClasses]
   Dpaa2EthernetMacLib
   Dpaa2McInterfaceLib
+  DxeServicesLib
   ItbParseLib
   SocLib
   SysEepromLib
@@ -44,6 +45,7 @@
 
 [Guids]
   gFdtTableGuid
+  gNxpQoriqMcBinaryGuid
 
 [FixedPcd]
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McFwSrc

@@ -1370,7 +1370,7 @@ Dpaa2NotifyExitBootServices (
     NodeOffset = fdt_path_offset (Dtb, "/fsl-mc");
   }
   if (NodeOffset < 0) {
-    DPAA_ERROR_MSG ("Did not find fsl-mc node in the Dtb Blob.\n");
+    DPAA_INFO_MSG ("Did not find fsl-mc node in the Dtb Blob.\n");
   }
 
   if (gDpaa2Driver.McStatus == EFI_SUCCESS) {

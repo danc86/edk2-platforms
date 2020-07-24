@@ -13,6 +13,8 @@
 
 **/
 
+#include <PiDxe.h>
+
 #include <Library/ArmLib.h>
 #include <Library/BaseMemoryLib/MemLibInternals.h>
 #include <Library/DpaaDebugLib.h>
@@ -20,6 +22,7 @@
 #include <Library/Dpaa2McInterfaceLib/fsl_dpmng.h>
 #include <Library/Dpaa2McInterfaceLib/fsl_dprc.h>
 #include <Library/Dpaa2ManagementComplexLib.h>
+#include <Library/DxeServicesLib.h>
 #include <Library/IoLib.h>
 #include <Library/ItbParse.h>
 #include <Library/MemoryAllocationLib.h>
@@ -30,6 +33,9 @@
 
 #include "ManagementComplex.h"
 #include <DramInfo.h>
+
+STATIC CONST UINT32   *mFirmwareImage;
+STATIC UINTN          mFirmwareImageSize;
 
 /**
  * Global control block for the DPPA2 Management Complex (MC)
@@ -228,9 +234,23 @@ McLoadFirmware (
   INT32 NodeOffset;
 
   NodeOffset = 0;
-  ASSERT (FlashSource == MC_IMAGES_IN_NOR_FLASH);
+  ASSERT (FlashSource <= MC_IMAGES_IN_FIRMWARE);
 
-  McFwFlashAddr = FixedPcdGet64 (PcdDpaa2McFwNorAddr);
+  if (FlashSource == MC_IMAGES_IN_FIRMWARE) {
+    Status = GetSectionFromAnyFv (&gNxpQoriqMcBinaryGuid,
+                                  EFI_SECTION_RAW, 0,
+                                  (VOID **) (VOID **)&mFirmwareImage,
+                                  &mFirmwareImageSize);
+    if (EFI_ERROR (Status)) {
+      DEBUG ((EFI_D_ERROR, "%a: could not locate McBin firmware image\n",
+             __FUNCTION__));
+      return Status;
+    }
+
+    McFwFlashAddr = (EFI_PHYSICAL_ADDRESS)mFirmwareImage;
+  } else {
+    McFwFlashAddr = FixedPcdGet64 (PcdDpaa2McFwNorAddr);
+  }
 
   DPAA_INFO_MSG (
     "Loading MC firmware FIT image from flash address 0x%p ...\n",
@@ -947,9 +967,23 @@ McLoadDpc (
   ASSERT (DpcMcDramOffset < Mc->McPrivateMemorySize);
   ASSERT (DpcMaxLen != 0);
   ASSERT (DpcMcDramOffset + DpcMaxLen <= Mc->McPrivateMemorySize);
-  ASSERT (FlashSource == MC_IMAGES_IN_NOR_FLASH);
+  ASSERT (FlashSource <= MC_IMAGES_IN_FIRMWARE);
 
-  DpcFlashAddr = FixedPcdGet64 (PcdDpaa2McDpcNorAddr);
+  if (FlashSource == MC_IMAGES_IN_FIRMWARE) {
+    Status = GetSectionFromAnyFv (&gNxpQoriqMcBinaryGuid,
+                                  EFI_SECTION_RAW, 1,
+                                  (VOID **) (VOID **)&mFirmwareImage,
+                                  &mFirmwareImageSize);
+    if (EFI_ERROR (Status)) {
+      DEBUG ((EFI_D_ERROR, "%a: could not locate McBin DPC firmware image\n",
+             __FUNCTION__));
+      return Status;
+    }
+
+    DpcFlashAddr = (EFI_PHYSICAL_ADDRESS)mFirmwareImage;
+  } else {
+    DpcFlashAddr = FixedPcdGet64 (PcdDpaa2McDpcNorAddr);
+  }
 
   DPAA_INFO_MSG ("Loading MC DPC FDT blob from flash address 0x%p ...\n",
               DpcFlashAddr);
@@ -1362,7 +1396,7 @@ Dpaa2McInit (
   McFwSrc = FixedPcdGet8 (PcdDpaa2McFwSrc);
   McCoreReleased = FALSE;
 
-  if (McFwSrc != MC_IMAGES_IN_NOR_FLASH) {
+  if (McFwSrc > MC_IMAGES_IN_FIRMWARE) {
     DPAA_ERROR_MSG ("Storage media '%d' for MC firmware images not supported\n",
                  McFwSrc);
     return EFI_INVALID_PARAMETER;
@@ -1583,9 +1617,23 @@ McLoadDpl (
   ASSERT (DplMcDramOffset < Mc->McPrivateMemorySize);
   ASSERT (DplMaxLen != 0);
   ASSERT (DplMcDramOffset + DplMaxLen <= Mc->McPrivateMemorySize);
-  ASSERT (FlashSource == MC_IMAGES_IN_NOR_FLASH);
+  ASSERT (FlashSource <= MC_IMAGES_IN_FIRMWARE);
 
-  DplFlashAddr = FixedPcdGet64 (PcdDpaa2McDplNorAddr);
+  if (FlashSource == MC_IMAGES_IN_FIRMWARE) {
+    Status = GetSectionFromAnyFv (&gNxpQoriqMcBinaryGuid,
+                                  EFI_SECTION_RAW, 2,
+                                  (VOID **) (VOID **)&mFirmwareImage,
+                                  &mFirmwareImageSize);
+    if (EFI_ERROR (Status)) {
+      DEBUG ((EFI_D_ERROR, "%a: could not locate McBin DPL firmware image\n",
+             __FUNCTION__));
+      return Status;
+    }
+
+    DplFlashAddr = (EFI_PHYSICAL_ADDRESS)mFirmwareImage;
+  } else {
+    DplFlashAddr = FixedPcdGet64 (PcdDpaa2McDplNorAddr);
+  }
 
   DPAA_INFO_MSG ("Loading MC DPL FDT blob from flash address 0x%p ...\n",
               DplFlashAddr);
