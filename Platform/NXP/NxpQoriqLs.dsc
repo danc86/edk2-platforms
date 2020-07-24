@@ -200,9 +200,8 @@
   NULL|ArmPkg/Library/CompilerIntrinsicsLib/CompilerIntrinsicsLib.inf
 
 [BuildOptions]
-  XCODE:*_*_ARM_PLATFORM_FLAGS == -arch armv7
-  GCC:*_*_ARM_PLATFORM_FLAGS == -march=armv7-a
-  RVCT:*_*_ARM_PLATFORM_FLAGS == --cpu cortex-a9
+  GCC:*_*_ARM_PLATFORM_FLAGS == -march=armv8-a
+  GCC:RELEASE_*_*_CC_FLAGS  = -DMDEPKG_NDEBUG
 
 [BuildOptions.common.EDKII.DXE_RUNTIME_DRIVER]
   GCC:*_*_ARM_DLINK_FLAGS = -z common-page-size=0x1000

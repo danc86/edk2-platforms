@@ -219,6 +219,7 @@ SocInit (
       (CHAR16*)PcdGetPtr (PcdFirmwareVersionString), __TIME__, __DATE__);
   SerialPortWrite ((UINT8 *) Buffer, CharCount);
 
+#ifndef MDEPKG_NDEBUG
   //
   // Print CPU information
   //
@@ -228,6 +229,7 @@ SocInit (
   // Print Reset Controll Word
   //
   PrintRCW ();
+#endif
 
   //
   // Print Soc Personality information

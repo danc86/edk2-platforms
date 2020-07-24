@@ -181,7 +181,6 @@ STATIC CONST EFI_PCI_ROOT_BRIDGE_DEVICE_PATH mEfiPciRootBridgeDevicePath[] = {
   }
 };
 
-STATIC
 GLOBAL_REMOVE_IF_UNREFERENCED
 CHAR16 *mPciHostBridgeLibAcpiAddressSpaceTypeStr[] = {
   L"Mem", L"I/O", L"Bus"
