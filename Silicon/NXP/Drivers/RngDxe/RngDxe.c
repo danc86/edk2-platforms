@@ -23,10 +23,6 @@
 #include <Protocol/Rng.h>
 
 #define MAX_RNG_BYTES           8   // max number of bytes in a returned rng
-#define NUMBER_SUPPORTED_ALGO   1   // max number of rng algorithms supported by driver
-
-// Array of supported rng algorithms
-EFI_RNG_ALGORITHM gSuppAlgoList[NUMBER_SUPPORTED_ALGO];
 
 /**
  * Retrieves a list of the supported RNG algorithms.
@@ -44,35 +40,28 @@ EFI_RNG_ALGORITHM gSuppAlgoList[NUMBER_SUPPORTED_ALGO];
 
 EFI_STATUS
 GetInfo (
-  IN     EFI_RNG_PROTOCOL     *This,
-  IN OUT UINTN                *RNGAlgorithmListSize,
-  OUT    EFI_RNG_ALGORITHM    *RNGAlgorithmList
+  IN      EFI_RNG_PROTOCOL        *This,
+  IN OUT  UINTN                   *RNGAlgorithmListSize,
+  OUT     EFI_RNG_ALGORITHM       *RNGAlgorithmList
   )
 {
-  EFI_STATUS    Status;
-  UINTN         RequiredSize;
-
-  Status = EFI_SUCCESS;
-
-  if ((This == NULL) || (RNGAlgorithmListSize == NULL)
-          || (RNGAlgorithmList == NULL)) {
+  if (This == NULL || RNGAlgorithmListSize == NULL) {
     return EFI_INVALID_PARAMETER;
   }
 
-  RequiredSize = sizeof (gSuppAlgoList);
-
-  if (*RNGAlgorithmListSize < RequiredSize) {
-    Status = EFI_BUFFER_TOO_SMALL;
-  } else {
-    //
-    // Return algorithm list supported by driver.
-    //
-    CopyMem (RNGAlgorithmList, gSuppAlgoList, RequiredSize);
+  if (*RNGAlgorithmListSize < sizeof (EFI_RNG_ALGORITHM)) {
+    *RNGAlgorithmListSize = sizeof (EFI_RNG_ALGORITHM);
+    return EFI_BUFFER_TOO_SMALL;
   }
 
-  *RNGAlgorithmListSize = (sizeof (gSuppAlgoList));
+  if (RNGAlgorithmList == NULL) {
+    return EFI_INVALID_PARAMETER;
+  }
 
-  return Status;
+  *RNGAlgorithmListSize = sizeof (EFI_RNG_ALGORITHM);
+  CopyGuid (RNGAlgorithmList, &gEfiRngAlgorithmRaw);
+
+  return EFI_SUCCESS;
 }
 
 /**
@@ -98,26 +87,35 @@ GetRNG (
   OUT UINT8                 *RNGValue
   )
 {
+  UINTN         Length;
   EFI_STATUS   Status;
-
-  Status = EFI_SUCCESS;
 
   DEBUG ((DEBUG_INFO, "RNGValueLength (in bytes) %d\n", RNGValueLength));
 
-  if ((NULL != RNGValue) && (0 < RNGValueLength) &&
-      (MAX_RNG_BYTES >= RNGValueLength)) {
-    if ((NULL == RNGAlgorithm) ||
-        (CompareGuid (RNGAlgorithm, &gEfiRngAlgorithmRaw))) {
-      Status = getRawRng (RNGValueLength, RNGValue);
-    } else {
-      DEBUG ((DEBUG_ERROR, "Requested RNG algorithm is not supported\n"));
-      Status = EFI_UNSUPPORTED;
-    }
-  } else {
-    Status = EFI_INVALID_PARAMETER;
+  if (This == NULL || RNGValueLength == 0 || RNGValue == NULL) {
+    return EFI_INVALID_PARAMETER;
   }
 
-  return Status;
+  //
+  // We only support the raw algorithm, so reject requests for anything else
+  //
+  if (RNGAlgorithm != NULL &&
+      !CompareGuid (RNGAlgorithm, &gEfiRngAlgorithmRaw)) {
+    return EFI_UNSUPPORTED;
+  }
+
+  do {
+    Length = MIN (RNGValueLength, MAX_RNG_BYTES);
+    Status = getRawRng (Length, RNGValue);
+    if (EFI_ERROR (Status)) {
+      return Status;
+    }
+
+    RNGValue += Length;
+    RNGValueLength -= Length;
+  } while (RNGValueLength > 0);
+
+  return EFI_SUCCESS;
 }
 
 EFI_RNG_PROTOCOL gRngProtocol = {
@@ -144,20 +142,11 @@ RngDriverEntryPoint (
   IN EFI_SYSTEM_TABLE  *SystemTable
   )
 {
-  EFI_STATUS     Status;
-
-  Status = EFI_SUCCESS;
-
-  // initialize the array of supported rng algorithms
-  // Note: if you are going to add anything to this array, you
-  //       must first increase its size
-  CopyGuid (gSuppAlgoList, &gEfiRngAlgorithmRaw);
-
   // install the Random Number Generator Architectural Protocol
-  Status = gBS->InstallMultipleProtocolInterfaces (&ImageHandle,
+  return SystemTable->BootServices->InstallMultipleProtocolInterfaces (
+		                                   &ImageHandle,
                                                    &gEfiRngProtocolGuid,
                                                    &gRngProtocol,
                                                    NULL
                                                    );
-  return Status;
 }
