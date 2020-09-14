@@ -208,7 +208,6 @@ STATIC CONST ARM_TYPE17 mArmDefaultType17 = {
     0,      /* not part of a set */
     1,      /* right side of board */
     2,      /* bank 0 */
-/*  MemoryTypeLpddr3, */ /* LP DDR3, isn't defined yet */
     MemoryTypeDdr4,                  /* LP DDR4 */
     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,1}, /* unbuffered */
     3200,                            /* 3200Mhz DDR */
@@ -217,6 +216,32 @@ STATIC CONST ARM_TYPE17 mArmDefaultType17 = {
     0, /* asset tag */
     0, /* part number */
     0, /* rank */
+    0,                    // ExtendedSize; (since Size < 32GB-1)
+    0,                    // ConfiguredMemoryClockSpeed; (unknown)
+    0,                    // MinimumVoltage; (unknown)
+    0,                    // MaximumVoltage; (unknown)
+    0,                    // ConfiguredVoltage; (unknown)
+    MemoryTechnologyDram, // MemoryTechnology                 ///< The enumeration value from MEMORY_DEVICE_TECHNOLOGY
+    {{                    // MemoryOperatingModeCapability
+      0,  // Reserved                        :1;
+      0,  // Other                           :1;
+      0,  // Unknown                         :1;
+      1,  // VolatileMemory                  :1;
+      0,  // ByteAccessiblePersistentMemory  :1;
+      0,  // BlockAccessiblePersistentMemory :1;
+      0   // Reserved                        :10;
+    }},
+    0,                    // FirwareVersion
+    0,                    // ModuleManufacturerID (unknown)
+    0,                    // ModuleProductID (unknown)
+    0,                    // MemorySubsystemControllerManufacturerID (unknown)
+    0,                    // MemorySubsystemControllerProductID (unknown)
+    0,                    // NonVolatileSize
+    0xFFFFFFFFFFFFFFFFULL,// VolatileSize // initialized at runtime, refer to PhyMemArrayInfoUpdateSmbiosType16()
+    0,                    // CacheSize
+    0,                    // LogicalSize (since MemoryType is not MemoryTypeLogicalNonVolatileDevice)
+    0,                    // ExtendedSpeed,
+    0                     // ExtendedConfiguredMemorySpeed
   },
   TYPE17_STRINGS
 };
