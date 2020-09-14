@@ -65,6 +65,7 @@
   gEfiEventVirtualAddressChangeGuid
 
 [Depex]
+  gEfiCpuArchProtocolGuid AND
   gEdkiiPlatformHasDeviceTreeGuid
 
 

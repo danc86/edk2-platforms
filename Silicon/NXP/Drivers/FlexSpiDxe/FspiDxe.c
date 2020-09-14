@@ -373,10 +373,13 @@ EFI_STATUS
 EFIAPI
 FspiInstallProtocol (
   IN  FSPI_MASTER  *Fspi,
-  IN  BOOLEAN          Runtime
+  IN  BOOLEAN      Runtime
   )
 {
   EFI_STATUS Status;
+  EFI_GCD_MEMORY_SPACE_DESCRIPTOR desp = {0};
+  UINT64 MemoryAttributes = EFI_MEMORY_UC | EFI_MEMORY_RUNTIME;
+  BOOLEAN AllocatedMemory = FALSE;
 
   // Install SPI Host controller protocol and Device Path Protocol
   Status = gBS->InstallMultipleProtocolInterfaces (
@@ -386,30 +389,37 @@ FspiInstallProtocol (
                   NULL
                   );
   if (EFI_ERROR (Status)) {
-    DEBUG ((DEBUG_ERROR, "%a:%d Error = %d\n", __FUNCTION__, __LINE__, Status));
+    DEBUG ((DEBUG_ERROR, "%a:%d InstallMultipleProtocolInterfaces Error = %d\n", __FUNCTION__, __LINE__, Status));
     return Status;
   }
 
   if (Runtime) {
     // Declare the controller registers as EFI_MEMORY_RUNTIME
-    Status = gDS->AddMemorySpace (
-                    EfiGcdMemoryTypeMemoryMappedIo,
-                    (UINTN)Fspi->Regs,
-                    ALIGN_VALUE (sizeof (FSPI_REGISTERS), SIZE_64KB),
-                    EFI_MEMORY_UC | EFI_MEMORY_RUNTIME
-                    );
+    Status = gDS->GetMemorySpaceDescriptor((UINTN)Fspi->Regs, &desp);
     if (EFI_ERROR (Status)) {
-      DEBUG ((DEBUG_ERROR, "%a:%d Error = %r\n", __FUNCTION__, __LINE__, Status));
+      Status = gDS->AddMemorySpace (
+                 EfiGcdMemoryTypeMemoryMappedIo,
+                 (UINTN)Fspi->Regs,
+                 ALIGN_VALUE (sizeof (FSPI_REGISTERS), SIZE_64KB),
+                 MemoryAttributes
+               );
+      AllocatedMemory = TRUE;
+    } else {
+      MemoryAttributes |= desp.Attributes;
+    }
+
+    if (EFI_ERROR (Status)) {
+      DEBUG ((DEBUG_ERROR, "%a:%d MemorySpace Error = %r\n", __FUNCTION__, __LINE__, Status));
       goto UninstallProtocol;
     }
 
     Status = gDS->SetMemorySpaceAttributes (
                     (UINTN)Fspi->Regs,
                     ALIGN_VALUE (sizeof (FSPI_REGISTERS), SIZE_64KB),
-                    EFI_MEMORY_UC | EFI_MEMORY_RUNTIME
+                    MemoryAttributes
                     );
     if (EFI_ERROR (Status)) {
-      DEBUG ((DEBUG_ERROR, "%a:%d Error = %r\n", __FUNCTION__, __LINE__, Status));
+      DEBUG ((DEBUG_ERROR, "%a:%d SetMemorySpaceAttributes Error = %r\n", __FUNCTION__, __LINE__, Status));
       goto RemoveMemorySpace;
     }
 
@@ -425,14 +435,14 @@ FspiInstallProtocol (
                     &Fspi->Event
                     );
     if (EFI_ERROR (Status)) {
-      DEBUG ((DEBUG_ERROR, "%a:%d Error = %r\n", __FUNCTION__, __LINE__, Status));
+      DEBUG ((DEBUG_ERROR, "%a:%d CreateEventEx Error = %r\n", __FUNCTION__, __LINE__, Status));
       goto RemoveMemorySpace;
     }
 
     // Connect the controller Recursively to SPI bus
     Status = gBS->ConnectController (Fspi->Handle, NULL, NULL, TRUE);
     if (EFI_ERROR (Status)) {
-      DEBUG ((DEBUG_ERROR, "%a:%d Error = %d\n", __FUNCTION__, __LINE__, Status));
+      DEBUG ((DEBUG_ERROR, "%a:%d ConnectController Error = %d\n", __FUNCTION__, __LINE__, Status));
       goto RemoveEvent;
     }
   }
@@ -444,11 +454,13 @@ RemoveEvent:
   ASSERT_EFI_ERROR (Status);
 
 RemoveMemorySpace:
-  Status = gDS->RemoveMemorySpace (
-                  (UINTN)Fspi->Regs,
-                  ALIGN_VALUE (sizeof (FSPI_REGISTERS), SIZE_64KB)
-                  );
-  ASSERT_EFI_ERROR (Status);
+  if (AllocatedMemory) {
+    Status = gDS->RemoveMemorySpace (
+                    (UINTN)Fspi->Regs,
+                    ALIGN_VALUE (sizeof (FSPI_REGISTERS), SIZE_64KB)
+                    );
+    ASSERT_EFI_ERROR (Status);
+  }
 
 UninstallProtocol:
   Status = gBS->UninstallMultipleProtocolInterfaces (

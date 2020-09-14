@@ -192,6 +192,8 @@ I2cDxeEntryPoint (
   )
 {
   EFI_STATUS                Status;
+  EFI_GCD_MEMORY_SPACE_DESCRIPTOR desp = {0};
+  UINT64                    MemoryAttributes = EFI_MEMORY_UC | EFI_MEMORY_RUNTIME;
 
 
   mI2cRegs = ( EFI_PHYSICAL_ADDRESS)(FixedPcdGet64 (PcdI2c0BaseAddr) +
@@ -209,31 +211,37 @@ I2cDxeEntryPoint (
                 );
 
   // Declare the controller as EFI_MEMORY_RUNTIME
-  Status = gDS->AddMemorySpace (
-                  EfiGcdMemoryTypeMemoryMappedIo,
-                  (EFI_PHYSICAL_ADDRESS)mI2cRegs,
-                  (SIZE_64KB),
-                  EFI_MEMORY_UC | EFI_MEMORY_RUNTIME
-                );
+  Status = gDS->GetMemorySpaceDescriptor((EFI_PHYSICAL_ADDRESS)mI2cRegs, &desp);
+  if (EFI_ERROR (Status)) {
+    Status = gDS->AddMemorySpace (
+               EfiGcdMemoryTypeMemoryMappedIo,
+               (EFI_PHYSICAL_ADDRESS)mI2cRegs,
+               (SIZE_64KB),
+               MemoryAttributes 
+             );
+  } else {
+    MemoryAttributes |= desp.Attributes;
+  }
+
   if (EFI_ERROR (Status)) {
     return Status;
   }
 
   Status = gDS->SetMemorySpaceAttributes (
                   (EFI_PHYSICAL_ADDRESS)mI2cRegs,
-                   (SIZE_64KB),
-                  EFI_MEMORY_UC | EFI_MEMORY_RUNTIME
+                  (SIZE_64KB),
+                  MemoryAttributes
                 );
 
   ASSERT_EFI_ERROR (Status);
 
-    //
-    // Register for the virtual address change event
-    //
-    Status = gBS->CreateEventEx (EVT_NOTIFY_SIGNAL, TPL_NOTIFY,
-                    I2cVirtualNotifyEvent, NULL,
-                    &gEfiEventVirtualAddressChangeGuid,
-                    &VirtualAddressChangeEvent);
+  //
+  // Register for the virtual address change event
+  //
+  Status = gBS->CreateEventEx (EVT_NOTIFY_SIGNAL, TPL_NOTIFY,
+                  I2cVirtualNotifyEvent, NULL,
+                  &gEfiEventVirtualAddressChangeGuid,
+                  &VirtualAddressChangeEvent);
 
   return Status;
 }

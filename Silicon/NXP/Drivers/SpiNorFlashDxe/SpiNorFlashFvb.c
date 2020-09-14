@@ -777,6 +777,8 @@ SpiNorFlashFvbInitialize (
   SPI_NOR_PARAMS                          *SpiNorParams;
   SFDP_FLASH_PARAM                        *ParamTable;
   EFI_LBA                                 StartLba;
+  EFI_GCD_MEMORY_SPACE_DESCRIPTOR         desp = {0};
+  UINT64 MemoryAttributes = EFI_MEMORY_UC | EFI_MEMORY_XP | EFI_MEMORY_RUNTIME;
 
   DEBUG ((DEBUG_BLKIO,"SpiNorFlashFvbInitialize\n"));
   ASSERT((Context != NULL));
@@ -788,18 +790,24 @@ SpiNorFlashFvbInitialize (
   //
   // Declare the Non-Volatile storage as EFI_MEMORY_RUNTIME
   //
-  Status = gDS->AddMemorySpace (
+  Status = gDS->GetMemorySpaceDescriptor(ConfigData->DeviceBaseAddress, &desp);
+  if (EFI_ERROR (Status)) {
+    Status = gDS->AddMemorySpace (
                   EfiGcdMemoryTypeMemoryMappedIo,
                   ConfigData->DeviceBaseAddress,
                   ConfigData->FlashSize,
-                  EFI_MEMORY_UC | EFI_MEMORY_XP | EFI_MEMORY_RUNTIME
+                  MemoryAttributes
                   );
+  } else {
+    MemoryAttributes |= desp.Attributes;
+  }
+
   ASSERT_EFI_ERROR (Status);
 
   Status = gDS->SetMemorySpaceAttributes (
                    ConfigData->DeviceBaseAddress,
                    ConfigData->FlashSize,
-                   EFI_MEMORY_UC | EFI_MEMORY_XP | EFI_MEMORY_RUNTIME
+                   MemoryAttributes
                    );
   ASSERT_EFI_ERROR (Status);
 
