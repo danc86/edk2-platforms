@@ -36,9 +36,9 @@
   #
   # Network definition
   #
-  DEFINE NETWORK_TLS_ENABLE             = FALSE
-  DEFINE NETWORK_HTTP_BOOT_ENABLE       = FALSE
-  DEFINE NETWORK_ISCSI_ENABLE           = FALSE
+  DEFINE NETWORK_TLS_ENABLE             = TRUE
+  DEFINE NETWORK_HTTP_BOOT_ENABLE       = TRUE
+  DEFINE NETWORK_ISCSI_ENABLE           = TRUE
 
 !include Platform/NXP/NxpQoriqLs.dsc
 !include Silicon/NXP/Chassis/Chassis3V2/Chassis3V2.dsc
@@ -65,6 +65,13 @@
   SecureMonRngLib|Silicon/NXP/Library/SecureMonRngLib/SecureMonRngLib.inf
   MemoryInitPeiLib|Silicon/NXP/Library/MemoryInitPei/MemoryInitPeiLib.inf
   UefiUsbLib|MdePkg/Library/UefiUsbLib/UefiUsbLib.inf
+
+  BaseCryptLib|CryptoPkg/Library/BaseCryptLib/BaseCryptLib.inf
+  OpensslLib|CryptoPkg/Library/OpensslLib/OpensslLib.inf
+!if $(NETWORK_TLS_ENABLE) == TRUE
+  TlsLib|CryptoPkg/Library/TlsLib/TlsLib.inf
+  IntrinsicLib|CryptoPkg/Library/IntrinsicLib/IntrinsicLib.inf
+!endif
 
 [PcdsFeatureFlag.common]
   gEfiMdeModulePkgTokenSpaceGuid.PcdInstallAcpiSdtProtocol|TRUE
