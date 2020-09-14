@@ -26,7 +26,12 @@
   DEFINE CAPSULE_ENABLE          = TRUE
   DEFINE X64EMU_ENABLE           = TRUE
   DEFINE AARCH64_GOP_ENABLE      = TRUE
+
+!ifdef SECURE_BOOT
   DEFINE SECURE_BOOT_ENABLE      = TRUE
+!else
+  DEFINE SECURE_BOOT_ENABLE      = FALSE
+!endif
 
   #
   # Network definition
@@ -47,7 +52,6 @@
   PL011UartClockLib|Silicon/NXP/Library/PL011UartClockLib/PL011UartClockLib.inf
   SerialPortLib|ArmPlatformPkg/Library/PL011SerialPortLib/PL011SerialPortLib.inf
   SocLib|Silicon/NXP/Chassis/LX2160aSocLib.inf
-  RealTimeClockLib|Silicon/NXP/Library/Pcf2129RtcMmLib/Pcf2129RtcLib.inf
   BoardInfoLib|Platform/SolidRun/LX2160aCex7/Library/BoardInfoLib/BoardInfoLib.inf
   PciSegmentLib|Silicon/NXP/Library/PciSegmentLib/PciSegmentLib.inf
   PciHostBridgeLib|Silicon/NXP/Library/PciHostBridgeLib/PciHostBridgeLib.inf
@@ -192,19 +196,34 @@
   #
   # Architectural Protocols
   #
-  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf {
-      <LibraryClasses>
-      NULL|StandaloneMmPkg/Library/VariableMmDependency/VariableMmDependency.inf
-  }
-
+!if $(SECURE_BOOT_ENABLE) == TRUE
   ArmPkg/Drivers/MmCommunicationOpteeDxe/MmCommunication.inf {
       <LibraryClasses>
       OpteeLib|ArmPkg/Library/OpteeLib/OpteeLib.inf
+      NULL|StandaloneMmPkg/Library/VariableMmDependency/VariableMmDependency.inf
   }
+  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf
+!else
+  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf{
+     <LibraryClasses>
+     NULL|MdeModulePkg/Library/VarCheckUefiLib/VarCheckUefiLib.inf
+     NULL|EmbeddedPkg/Library/NvVarStoreFormattedLib/NvVarStoreFormattedLib.inf
+     DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+  }
+  MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
+!endif
 
   ArmPkg/Drivers/GenericWatchdogDxe/GenericWatchdogDxe.inf
   Silicon/NXP/Drivers/I2cDxe/I2cDxe.inf
-  EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
+
+  EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf {
+    <LibraryClasses>
+!if $(SECURE_BOOT_ENABLE) == TRUE
+      RealTimeClockLib|Silicon/NXP/Library/Pcf2129RtcMmLib/Pcf2129RtcLib.inf
+!else
+      RealTimeClockLib|Silicon/NXP/Library/Pcf2129RtcLib/Pcf2129RtcLib.inf
+!endif
+  }
   Silicon/NXP/Drivers/UsbHcdInitDxe/UsbHcd.inf
   Silicon/NXP/Drivers/PciCpuIo2Dxe/PciCpuIo2Dxe.inf
   MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf {
