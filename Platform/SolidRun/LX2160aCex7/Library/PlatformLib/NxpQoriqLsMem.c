@@ -95,8 +95,8 @@ ArmPlatformGetVirtualMemoryMap (
   VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
   BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_MAPPED_IO,
-      EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE,
+      EFI_RESOURCE_MEMORY_RESERVED,
+      EFI_RESOURCE_ATTRIBUTE_PRESENT,
       VirtualMemoryTable[Index].VirtualBase,
       VirtualMemoryTable[Index].Length
   );
@@ -140,8 +140,8 @@ ArmPlatformGetVirtualMemoryMap (
   VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
   BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_MAPPED_IO,
-      EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE,
+      EFI_RESOURCE_MEMORY_RESERVED,
+      EFI_RESOURCE_ATTRIBUTE_PRESENT,
       VirtualMemoryTable[Index].VirtualBase,
       VirtualMemoryTable[Index].Length
   );
@@ -196,7 +196,7 @@ ArmPlatformGetVirtualMemoryMap (
 
   BuildResourceDescriptorHob (
       EFI_RESOURCE_MEMORY_MAPPED_IO,
-      EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE,
+      EFI_RESOURCE_ATTRIBUTE_WRITE_THROUGH_CACHEABLE,
       VirtualMemoryTable[Index].VirtualBase,
       VirtualMemoryTable[Index].Length
   );
