@@ -41,6 +41,7 @@ Scope(_SB)
             STS0 &= ~0x1F
             STS0 |= 0x12
           }
+          CAP0 |= 0x800    /* Enable Generic Event Device support */
         }
       } Else {
         STS0 &= ~0x1F

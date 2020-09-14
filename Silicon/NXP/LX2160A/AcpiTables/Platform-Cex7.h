@@ -303,6 +303,14 @@
 #define RCPM_BASE 0x1e34040
 #define RCPM_LEN  0x1000
 
+//GPIO3
+#define GPIO3_BASE  0x2320000
+#define GPIO3_LEN   0x10000
+#define GPIO3_IT    69
+
+//Power Button
+#define PWRBTN_PIN_MASK  0x02000000
+
 // Stream IDs
 #define NXP_DPAA2_STREAM_ID_START       23
 #define NXP_DPAA2_STREAM_ID_COUNT       40

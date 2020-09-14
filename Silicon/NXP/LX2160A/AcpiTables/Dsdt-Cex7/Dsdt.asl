@@ -24,6 +24,7 @@ DefinitionBlock("DsdtTable.aml", "DSDT", 1, "NXP  ", "LX2160  ", EFI_ACPI_ARM_OE
   include ("Mc.asl")
   include ("Mdio.asl")
   include ("../Dsdt/Pci.asl")
+  include ("Pwrb.asl")
   include ("../Dsdt/Rcpm.asl")
   include ("../Dsdt/Sata.asl")
   include ("../Dsdt/SPI.asl")
