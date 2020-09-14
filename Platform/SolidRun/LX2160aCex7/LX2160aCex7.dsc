@@ -23,7 +23,7 @@
   OUTPUT_DIRECTORY               = Build/LX2160aCex7
   FLASH_DEFINITION               = Platform/SolidRun/LX2160aCex7/LX2160aCex7.fdf
   DEFINE MC_HIGH_MEM             = TRUE
-  DEFINE CAPSULE_ENABLE          = TRUE
+  DEFINE CAPSULE_ENABLE          = FALSE
   DEFINE X64EMU_ENABLE           = TRUE
   DEFINE AARCH64_GOP_ENABLE      = TRUE
 
@@ -82,6 +82,7 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdVideoVerticalResolution|768
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoHorizontalResolution|1024
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoVerticalResolution|768
+  gEmbeddedTokenSpaceGuid.PcdDefaultDtPref|FALSE
 
 [PcdsFixedAtBuild.common]
 
@@ -98,13 +99,21 @@
   gArmTokenSpaceGuid.PcdSystemMemoryBase|0x0080000000
   gArmTokenSpaceGuid.PcdSystemMemorySize|0x0040000000             # 2G - 512MB - 66MB (ATF), 512 MB aligned
 !endif
-  gArmPlatformTokenSpaceGuid.PcdSystemMemoryUefiRegionSize|0x02000000
+  gArmPlatformTokenSpaceGuid.PcdSystemMemoryUefiRegionSize|0x04000000
   gEfiSecurityPkgTokenSpaceGuid.PcdOptionRomImageVerificationPolicy|0x00000004
+  gEfiMdeModulePkgTokenSpaceGuid.PcdImageProtectionPolicy|0x3
+  #
+  # Enable NX memory protection for all non-code regions, including OEM and OS
+  # reserved ones, with the exception of LoaderData regions, of which OS loaders
+  # (i.e., GRUB) may assume that its contents are executable.
+  #
+  gEfiMdeModulePkgTokenSpaceGuid.PcdDxeNxMemoryProtectionPolicy|0xC000000000007FD1
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSetNxForStack|TRUE
 
   #
   # SMBIOS entry point version
   #
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosVersion|0x0300
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosVersion|0x0302
   gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosEntryPointProvideMethod|0x2
   gEfiMdeModulePkgTokenSpaceGuid.PcdSmbiosDocRev|0x0
 
@@ -235,7 +244,7 @@
   Silicon/NXP/Drivers/PciCpuIo2Dxe/PciCpuIo2Dxe.inf
   MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf {
     <PcdsFixedAtBuild>
-  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x8010004F
+      gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x8010004F
   }
   MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
   MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
