@@ -12,8 +12,8 @@
 
 #include "Platform-Cex7.h"
 
-DefinitionBlock("DsdtTable.aml", "DSDT", 1, "NXP  ", "LX2160  ", EFI_ACPI_ARM_OEM_REVISION) {
-  include ("../Dsdt/Com.asl")
+DefinitionBlock("DsdtTable.aml", "DSDT", 2, "NXP  ", "LX2160  ", EFI_ACPI_ARM_OEM_REVISION) {
+  include ("Com.asl")
   include ("../Dsdt/CPU.asl")
   include ("Clk.asl")
   include ("../Dsdt/Esdhc.asl")
