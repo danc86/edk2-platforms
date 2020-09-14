@@ -91,7 +91,7 @@
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McLowRamSize|0x0
   gNxpQoriqLsTokenSpaceGuid.PcdMcHighMemSupport|1
   gArmTokenSpaceGuid.PcdSystemMemoryBase|0x0080000000             # Actual base
-  gArmTokenSpaceGuid.PcdSystemMemorySize|0x001BE00000             # 2G - 66MB (ATF)
+  gArmTokenSpaceGuid.PcdSystemMemorySize|0x007BE00000             # 2G - 66MB (ATF)
 !else
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McHighRamSize|0x0             # 512MB (Fixed)
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McLowRamSize|0x20000000       # 512MB (Fixed)
