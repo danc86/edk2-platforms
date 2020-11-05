@@ -90,7 +90,7 @@ Scope(_SB)
           Name(_UID, 1)
           Name (_HID, "PRP0001")
           Name(_CRS, ResourceTemplate() {
-            I2CSerialBus(0x4A, ControllerInitiated, 100000, AddressingMode7Bit, "\\_SB.I2C0.MUX0.CH01", 0, ResourceConsumer, ,)
+            I2CSerialBus(0x4A, ControllerInitiated, 100000, AddressingMode7Bit, "\\_SB.I2C0.MUX0.CH03", 0, ResourceConsumer, ,)
           })
           Name (_DSD, Package () {
                 ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
