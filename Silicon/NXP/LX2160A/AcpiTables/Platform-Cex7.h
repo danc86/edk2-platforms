@@ -164,7 +164,8 @@
 #define TMU_PASSIVE_THERSHOLD     3282        // Passive Thershold (54.8C)
 #define TMU_CRITICAL_THERSHOLD    3682        // Critical Thershold (94.8C)
 #define TMU_ACTIVE_LOW_THERSHOLD  3232        // Active low Thershold (50C)
-#define TMU_ACTIVE_HIGH_THERSHOLD 3432        // Active high Thershold (70C)
+#define TMU_ACTIVE_HIGH_THERSHOLD 3381        // Active high Thershold (65C)
+#define TMU_ACTIVE_FULL_THERSHOLD 3532        // Active high Thershold (80C)
 #define TMU_TIER_DISABLE_ALL      0x00        // Disable all interrupt
 #define TMU_TIDR_DISABLE_ALL      0x00        // Clear all interrupt
 #define TMU_TMR_DISABLE           0x00        // Disable TMU IP Monitoring mode
@@ -185,7 +186,7 @@
 #define TMU_FAN_1                 1           // FAN 1
 #define TMU_FAN_OFF_SPEED         0x55        // FAN off speed value at 33% PWM (Default)
 #define TMU_FAN_LOW_SPEED         0x80        // FAN low speed value at 50% PWM
-#define TMU_FAN_HIGH_SPEED        0xFF        // FAN high speed value at 100% PWM
+#define TMU_FAN_HIGH_SPEED        0xCC        // FAN high speed value at 80% PWM
 
 // DSPI
 #define SPI0_BASE 0x2100000
@@ -310,6 +311,7 @@
 
 //Power Button
 #define PWRBTN_PIN_MASK  0x02000000
+#define FANFS_PIN_MASK  0x20000000
 
 // Stream IDs
 #define NXP_DPAA2_STREAM_ID_START       23

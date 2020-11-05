@@ -21,19 +21,19 @@ Scope(_SB.I2C0)
 
   Name (SDB1, ResourceTemplate() { // SA56004AD temperature sensor
     I2CSerialBus(0x48, ControllerInitiated, 100000, AddressingMode7Bit,
-                 "\\_SB.I2C0", 0, ResourceConsumer, ,)
+                 "\\_SB.I2C0.MUX0.CH03", 0, ResourceConsumer, ,)
   })
 
   Name (SDB2, ResourceTemplate() { //fan controller with temp sensor
     I2CSerialBus(0x18, ControllerInitiated, 100000, AddressingMode7Bit,
-                 "\\_SB.I2C0", 0, ResourceConsumer, ,)
+                 "\\_SB.I2C0.MUX0.CH01", 0, ResourceConsumer, ,)
   })  
 
   Name (AVBL, Zero)
   // _REG: Region Availability
-  Method (_REG, 2, NotSerialized) {
-    If (LEqual (Arg0, 0x09)) {
-       Store (Arg1, AVBL)
+  Method (_REG, 2) {
+    If (LEqual (Arg0, 9)) {
+       Store (Arg1, ^AVBL)
     }
   }
 
@@ -48,48 +48,9 @@ Scope(_SB.I2C0)
     FLD1, 8                            // Virtual register at command value 0x01 for sa56004d sensor
   }
 
-  OperationRegion(OPR2, GenericSerialBus, 0x00, 0x100)
-  Field(OPR2, BufferAcc, NoLock, Preserve) {
-    Connection(SDB2),
-    offset(0x00),                      
-    AccessAs (BufferAcc, AttribByte),
-    FLD2, 8,                           // amc6821 fan config register
-    Connection(SDB2),
-    offset(0x0b),                      
-    AccessAs (BufferAcc, AttribByte),
-    FLD3, 8,                          // amc6821 temperature register  
-    Connection(SDB2),
-    offset(0x22),               
-    AccessAs (BufferAcc, AttribByte),
-    FLD4, 8                           // amc6821 fan duty cyle setting offset       
-  }  
-
-
-  Name(BUFF, Buffer(34){})
-  CreateByteField(BUFF, 0x00, STAT)
-  CreateByteField(BUFF, 0x01, LEN)
-  CreateByteField(BUFF, 0x02, DATA)
-
-  Method (FSEL, 1, Serialized){
-    Switch (Arg0){
-      case (0){
-        Store(0xd5, DATA) //auto fan mode
-      }
-      case (1){
-        Store(0x95, DATA) //software dcy mode
-      }
-      Default {
-        Store(0x95, DATA)
-      }            
-    }
-    Store(One, LEN)
-    Store(BUFF, FLD2) 
-    Return (STAT)    
-  }
-
 // Method to set pca9547 channel id
   Method (SCHN, 1, Serialized) {
-    Switch (Arg0) {
+    Switch (ToInteger(Arg0)) {
       case (0) {
         Store(0x08, DATA)
       }
@@ -122,6 +83,59 @@ Scope(_SB.I2C0)
     Store(BUFF, FLD0)
     Return (STAT)
   }
+
+  OperationRegion(OPR2, GenericSerialBus, 0x00, 0x100)
+  Field(OPR2, BufferAcc, NoLock, Preserve) {
+    Connection(SDB2),
+    AccessAs (BufferAcc, AttribByte),
+    offset(0x00),
+    FLD2, 8,                           // amc6821 fan config register
+    offset(0x0b),
+    FLD3, 8,                          // amc6821 temperature register
+    offset(0x22),
+    FLD4, 8,                           // amc6821 fan duty cyle setting offset
+  }
+
+  Name(BUFF, Buffer(34){})
+  CreateByteField(BUFF, 0x00, STAT)
+  CreateByteField(BUFF, 0x01, LEN)
+  CreateByteField(BUFF, 0x02, DATA)
+
+  Method (FSEL, 1, Serialized){
+    SCHN(I2C0_MUX_CHANNEL_1)
+    Switch (Arg0){
+      case (Zero){
+        Store(0x41, DATA) //auto fan mode
+      }
+      case (One){
+        Store(0x01, DATA) //software dcy mode
+      }
+      Default {
+        Store(0x01, DATA)
+      }
+    }
+    Store(One, LEN)
+    Store(BUFF, FLD2)
+    Return (STAT)
+  }
+
+/*
+  Method (FCF3, 1, Serialized){
+    SCHN(I2C0_MUX_CHANNEL_1)
+    Store(0x02, DATA)
+    Store(One, LEN)
+    Store(BUFF, FLD6)
+    Return (STAT)
+  }
+
+  Method (FCF4, 1, Serialized){
+    SCHN(I2C0_MUX_CHANNEL_1)
+    Store(0x88, DATA)
+    Store(One, LEN)
+    Store(BUFF, FLD5)
+    Return (STAT)
+  }
+*/
 
 // Method to read temperature from remote sensor
   Method (STMP, 1, Serialized) {
@@ -190,6 +204,7 @@ Scope(_TZ)
   Name(TRPC, TMU_CRITICAL_THERSHOLD)
   Name(TRP0, TMU_ACTIVE_HIGH_THERSHOLD)
   Name(TRP1, TMU_ACTIVE_LOW_THERSHOLD)
+  Name(TRP2, TMU_ACTIVE_FULL_THERSHOLD)
   Name(PLC0, TMU_PASSIVE)
   Name(PLC1, TMU_PASSIVE)
   Name(PLC2, TMU_PASSIVE)
@@ -279,6 +294,11 @@ Scope(_TZ)
     TCR3, 32
   }
 
+  OperationRegion (GPIO, SystemMemory, GPIO3_BASE, GPIO3_LEN)
+  Field (GPIO, DWordAcc, NoLock, Preserve) {
+    GDIR, 32
+  }
+
   // Method to read the sensors current temperature
   Method(GTMP, 1, Serialized) {
     Switch (Arg0) {
@@ -329,6 +349,7 @@ Scope(_TZ)
     Method (_ON) {
       If (LEqual (\_SB.I2C0.AVBL, One)) {
         \_SB.I2C0.FONL(TMU_FAN_1)
+        \_SB.I2C0.FSEL(One)
       }
     }
     Method (_OFF) {
@@ -355,6 +376,7 @@ Scope(_TZ)
     Method (_ON) {
       If (LEqual (\_SB.I2C0.AVBL, One)) {
         \_SB.I2C0.FONH(TMU_FAN_1)
+        \_SB.I2C0.FSEL(One)
       }
     }
     Method (_OFF) {
@@ -364,27 +386,70 @@ Scope(_TZ)
     }
   }
 
+  // FAN 2 power resources at full speed
+  PowerResource(FN1F, 0, 0) {
+    Method (_STA) {
+      Store(Zero, Local1)
+      If (GDIR & FANFS_PIN_MASK) {
+        Store(One, Local1)
+      } Else {
+        Store(Zero, Local1)
+      }
+      Return(Local1)
+    }
+    Method (_ON) {
+      GDIR |= FANFS_PIN_MASK
+    }
+    Method (_OFF) {
+      GDIR &= ~FANFS_PIN_MASK
+    }
+  }
+
   // FAN 0 device object
   Device (FAN0) {
-   // Device ID for the FAN
-   Name(_HID, EISAID("PNP0C0B"))
-   Name(_UID, 0)
-   Name(_PR0, Package() { FN1L })
+    // Device ID for the FAN
+    Name(_HID, EISAID("PNP0C0B"))
+    Name(_UID, 0)
+    Name(_PR0, Package() { FN1L })
+    Name(_DEP, Package() {\_SB.I2C0})
+
+    Method(_INI, 0, Serialized) {
+      //Select mode of fan controller
+      If (LEqual (\_SB.I2C0.AVBL, One)) {
+        \_SB.I2C0.FSEL(One)
+      }
+    }
   }
 
   // FAN 1 device object
   Device (FAN1) {
-   // Device ID for the FAN
-   Name(_HID, EISAID("PNP0C0B"))
-   Name(_UID, 1)
-   Name(_PR0, Package() { FN1L, FN1H })
+    // Device ID for the FAN
+    Name(_HID, EISAID("PNP0C0B"))
+    Name(_UID, 1)
+    Name(_DEP, Package() {\_SB.I2C0})
+    Name(_PR0, Package() { FN1L, FN1H })
+
+    Method(_INI, 0, Serialized) {
+      //Select mode of fan controller
+      If (LEqual (\_SB.I2C0.AVBL, 1)) {
+        \_SB.I2C0.FSEL(One)
+      }
+    }
+  }
+
+  // FAN 0 device object
+  Device (FAN2) {
+    // Device ID for the FAN
+    Name(_HID, EISAID("PNP0C0B"))
+    Name(_UID, 0)
+    Name(_PR0, Package() { FN1F })
   }
 
   Device(TMU) {
     Name(_HID, "NXP0012")
     Name(_UID, 0)
 
-    Method(_INI, 0, NotSerialized) {
+    Method(_INI, 0, Serialized) {
       // Disable interrupt, using polling instead
       Store(TMU_TIDR_DISABLE_ALL, TIDR)
       Store(TMU_TIER_DISABLE_ALL, TIER)
@@ -412,11 +477,6 @@ Scope(_TZ)
       Store(TMU_SENSOR_ENABLE_ALL, TMSR)
       // Enable Monitoring
       Store(TMU_TMR_ENABLE, TMR)
-
-      //Select mode of fan controller
-      If (LEqual (\_SB.I2C0.AVBL, One)) {
-        \_SB.I2C0.FSEL(1)
-      }
     }
   }
 
@@ -661,6 +721,7 @@ Scope(_TZ)
     Name(_TSP, TMU_TZ_SAMPLING_PERIOD)
     Name(_TC1, TMU_THERMAL_COFFICIENT_1)
     Name(_TC2, TMU_THERMAL_COFFICIENT_2)
+    Name(_DEP, Package() {\_SB.I2C0})
 
     Method(_AC0, 0, Serialized) { Return(TRP0) }
     Method(_AC1, 0, Serialized) { Return(TRP1) }
@@ -669,17 +730,17 @@ Scope(_TZ)
     
     Method(_SCP, 1) {
       If (LEqual (\_SB.I2C0.AVBL, One)) {
-        \_SB.I2C0.FSEL(1)
+        \_SB.I2C0.FSEL(One)
         If (Arg0) {
-          Store(1, PLC7)
+          Store(One, PLC7)
         } Else {
-          Store(0, PLC7)
+          Store(Zero, PLC7)
         }
       }
     }
 
     Method(_TMP, 0, Serialized) {
-      Store(\_SB.I2C0.STMP(1), Local0)
+      Store(\_SB.I2C0.STMP(One), Local0)
       //Adjustment to linux kelvin offset(2732)
       Local0 += 273
       Local0 = Local0 * 10 + 2
@@ -699,8 +760,11 @@ Scope(_TZ)
     Name(_TC1, TMU_THERMAL_COFFICIENT_1)
     Name(_TC2, TMU_THERMAL_COFFICIENT_2)
 
+    Method(_AC0, 0, Serialized) { Return(TRP2) }
+    Name(_AL0, Package() { FAN2 })
+
     Method(_TMP, 0, Serialized) {
-      Store(\_SB.I2C0.STMP(1), Local0)
+      Store(\_SB.I2C0.STMP(One), Local0)
       //Adjustment to linux kelvin offset(2732)
       Local0 += 273
       Local0 = Local0 * 10 + 2
