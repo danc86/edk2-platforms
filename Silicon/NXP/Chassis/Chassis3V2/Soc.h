@@ -41,6 +41,10 @@
 #define SMMU_REG_IDR1                (SMMU_BASE_ADDR + 0x24)
 #define SMMU_REG_NSCR0               (SMMU_BASE_ADDR + 0x400)
 #define SMMU_REG_NSACR               (SMMU_BASE_ADDR + 0x410)
+#define SMMU_REG_SMR(n)              (SMMU_BASE_ADDR + 0x800 + ((n) << 2))
+#define SMMU_REG_S2CR(n)             (SMMU_BASE_ADDR + 0xc00 + ((n) << 2))
+#define NXP_MC_LX2160A_STREAM_ID     0x4000
+
 
 /* Interrupt Sampling Control */
 #define INT_SAMPLING_CTRL_BASE        0x01F70000
@@ -49,6 +53,13 @@
 #define SACR_PAGESIZE_MASK           0x00010000
 #define SCR0_CLIENTPD_MASK           0x00000001
 #define SCR0_USFCFG_MASK             0x00000400
+#define SMMU_SMR_VALID_MASK          0x80000000
+#define SMMU_SMR_MASK_MASK           0xffff0000
+#define SMMU_SMR_MASK_SHIFT          16
+#define SMMU_SMR_ID_MASK             0x0000ffff
+#define SMMU_SMR_ID_SHIFT            0
+#define SMMU_S2CR_EXIDVALID_VALID_MASK 0x00000400
+#define SMMU_S2CR_TYPE_BYPASS_MASK     0x00010000
 
 #define DDR_GEN2_PHY_MULTIPLIER      4
 typedef struct {

@@ -104,6 +104,15 @@ SmmuInit (
   );
 
 /*
+ * Setup bypass entry in SMMU for MC
+ */
+VOID
+SmmuSetupMCBypass (
+  IN UINT32 Icid,
+  IN UINT32 Mask
+  );
+
+/*
  * Print CPU information
  */
 VOID

@@ -400,6 +400,23 @@ SmmuInit (
 }
 
 /*
+ * Setup bypass entry in SMMU for MC
+ */
+VOID
+SmmuSetupMCBypass (
+  IN UINT32 Icid,
+  IN UINT32 Mask
+  )
+{
+  UINT32 Value;
+
+  Value = SMMU_SMR_VALID_MASK | (Icid << SMMU_SMR_ID_SHIFT) | (Mask << SMMU_SMR_MASK_SHIFT);
+  MmioWrite32 ((UINTN)SMMU_REG_SMR(0), Value);
+  Value = SMMU_S2CR_EXIDVALID_VALID_MASK | SMMU_S2CR_TYPE_BYPASS_MASK;
+  MmioWrite32 ((UINTN)SMMU_REG_S2CR(0), Value);
+}
+
+/*
  * Return current Soc Name form CpuTypeList
  */
 CHAR8 *

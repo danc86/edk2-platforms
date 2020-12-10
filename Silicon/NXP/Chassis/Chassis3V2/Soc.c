@@ -197,6 +197,11 @@ SocInit (
   SmmuInit ();
 
   //
+  // Setup bypass entry in SMMU for MC
+  //
+  SmmuSetupMCBypass (NXP_MC_LX2160A_STREAM_ID, 0);
+
+  //
   // Early init i2c, needed to read Fpga register for Serial initialization.
   //
   I2cEarlyInitialize (I2cBase);
