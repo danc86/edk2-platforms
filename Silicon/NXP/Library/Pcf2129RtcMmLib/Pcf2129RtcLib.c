@@ -123,6 +123,7 @@ LibGetTime (
     Time->Day = 1;
     Time->Month = 1;
     Time->Year = 2000;
+    Status = LibSetTime(Time);
   } else {
     Time->Second  = BcdToDecimal8 (SmmPcf2129Header->Regs.Seconds & 0x7F);
     Time->Minute  = BcdToDecimal8 (SmmPcf2129Header->Regs.Minutes & 0x7F);

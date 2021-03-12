@@ -169,6 +169,7 @@ LibGetTime (
     Time->Day = 1;
     Time->Month = 1;
     Time->Year = 2000;
+    Status = LibSetTime(Time);
   } else {
     Time->Second  = BcdToDecimal8 (Regs.Seconds & 0x7F);
     Time->Minute  = BcdToDecimal8 (Regs.Minutes & 0x7F);
