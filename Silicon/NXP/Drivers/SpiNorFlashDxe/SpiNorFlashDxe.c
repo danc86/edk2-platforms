@@ -349,15 +349,17 @@ SpiNorVirtualNotifyEvent (
   EfiConvertPointer (0x0, (VOID**)&SpiNorContext->SpiNorParams);
 
   // Convert Fvb
-  EfiConvertPointer (0x0, (VOID**)&SpiNorContext->FvbProtocol.EraseBlocks);
-  EfiConvertPointer (0x0, (VOID**)&SpiNorContext->FvbProtocol.GetAttributes);
   EfiConvertPointer (0x0, (VOID**)&SpiNorContext->FvbProtocol.GetBlockSize);
   EfiConvertPointer (0x0, (VOID**)&SpiNorContext->FvbProtocol.GetPhysicalAddress);
-  EfiConvertPointer (0x0, (VOID**)&SpiNorContext->FvbProtocol.Read);
+  EfiConvertPointer (0x0, (VOID**)&SpiNorContext->FvbProtocol.GetAttributes);
   EfiConvertPointer (0x0, (VOID**)&SpiNorContext->FvbProtocol.SetAttributes);
+  EfiConvertPointer (0x0, (VOID**)&SpiNorContext->FvbProtocol.Read);
   EfiConvertPointer (0x0, (VOID**)&SpiNorContext->FvbProtocol.Write);
+  EfiConvertPointer (0x0, (VOID**)&SpiNorContext->FvbProtocol.EraseBlocks);
 
-  EfiConvertPointer (0x0, (VOID**)&SpiNorContext->ShadowBuffer);
+  if (SpiNorContext->ShadowBuffer != NULL) {
+    EfiConvertPointer (0x0, (VOID**)&SpiNorContext->ShadowBuffer);
+  }
 
   return;
 }
