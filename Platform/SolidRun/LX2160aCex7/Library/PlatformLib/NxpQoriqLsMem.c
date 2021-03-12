@@ -19,8 +19,8 @@
 **/
 
 #include <Library/ArmPlatformLib.h>
+#include <Library/BaseMemoryLib.h>
 #include <Library/DebugLib.h>
-#include <Library/HobLib.h>
 #include <Library/PcdLib.h>
 #include <Library/MemoryAllocationLib.h>
 
@@ -68,159 +68,86 @@ ArmPlatformGetVirtualMemoryMap (
 
   CacheAttributes = ARM_MEMORY_REGION_ATTRIBUTE_WRITE_BACK;
 
-  for (Index = 0; Index < DramInfo.NumOfDrams; Index++) {
+  for (I = 0; I < DramInfo.NumOfDrams; I++) {
     // DRAM1 (Must be 1st entry)
-    VirtualMemoryTable[Index].PhysicalBase = DramInfo.DramRegion[Index].BaseAddress;
-    VirtualMemoryTable[Index].VirtualBase  = DramInfo.DramRegion[Index].BaseAddress;
-    VirtualMemoryTable[Index].Length       = DramInfo.DramRegion[Index].Size;
-    VirtualMemoryTable[Index].Attributes   = CacheAttributes;
+    VirtualMemoryTable[Index].PhysicalBase = DramInfo.DramRegion[I].BaseAddress;
+    VirtualMemoryTable[Index].VirtualBase  = DramInfo.DramRegion[I].BaseAddress;
+    VirtualMemoryTable[Index].Length       = DramInfo.DramRegion[I].Size;
+    VirtualMemoryTable[Index++].Attributes   = CacheAttributes;
   }
   // CCSR Space
   VirtualMemoryTable[Index].PhysicalBase = FixedPcdGet64 (PcdCcsrBaseAddr);
   VirtualMemoryTable[Index].VirtualBase  = FixedPcdGet64 (PcdCcsrBaseAddr);
   VirtualMemoryTable[Index].Length       = FixedPcdGet64 (PcdCcsrSize);
-  VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
-
-  BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_MAPPED_IO,
-      EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE,
-      VirtualMemoryTable[Index].VirtualBase,
-      VirtualMemoryTable[Index].Length
-  );
+  VirtualMemoryTable[Index++].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
   // ROM Space
-  VirtualMemoryTable[++Index].PhysicalBase = FixedPcdGet64 (PcdRomBaseAddr);
+  VirtualMemoryTable[Index].PhysicalBase = FixedPcdGet64 (PcdRomBaseAddr);
   VirtualMemoryTable[Index].VirtualBase  = FixedPcdGet64 (PcdRomBaseAddr);
   VirtualMemoryTable[Index].Length       = FixedPcdGet64 (PcdRomSize);
-  VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
-
-  BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_RESERVED,
-      EFI_RESOURCE_ATTRIBUTE_PRESENT,
-      VirtualMemoryTable[Index].VirtualBase,
-      VirtualMemoryTable[Index].Length
-  );
+  VirtualMemoryTable[Index++].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
   // FSPI region 1
-  VirtualMemoryTable[++Index].PhysicalBase = FixedPcdGet64 (PcdQspiRegionBaseAddr);
+  VirtualMemoryTable[Index].PhysicalBase = FixedPcdGet64 (PcdQspiRegionBaseAddr);
   VirtualMemoryTable[Index].VirtualBase  = FixedPcdGet64 (PcdQspiRegionBaseAddr);
   VirtualMemoryTable[Index].Length       = FixedPcdGet64 (PcdQspiRegionSize);
-  VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_UNCACHED_UNBUFFERED;
-
-  BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_MAPPED_IO,
-      EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE,
-      VirtualMemoryTable[Index].VirtualBase,
-      VirtualMemoryTable[Index].Length
-  );
+  VirtualMemoryTable[Index++].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
   // FSPI region 2
-  VirtualMemoryTable[++Index].PhysicalBase = FixedPcdGet64 (PcdQspiRegion2BaseAddr);
+  VirtualMemoryTable[Index].PhysicalBase = FixedPcdGet64 (PcdQspiRegion2BaseAddr);
   VirtualMemoryTable[Index].VirtualBase  = FixedPcdGet64 (PcdQspiRegion2BaseAddr);
   VirtualMemoryTable[Index].Length       = FixedPcdGet64 (PcdQspiRegion2Size);
-  VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_UNCACHED_UNBUFFERED;
-
-  BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_MAPPED_IO,
-      EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE,
-      VirtualMemoryTable[Index].VirtualBase,
-      VirtualMemoryTable[Index].Length
-  );
+  VirtualMemoryTable[Index++].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
   // MC private DRAM
   if (FixedPcdGetBool (PcdMcHighMemSupport)) {
-    VirtualMemoryTable[++Index].PhysicalBase = VirtualMemoryTable[1].PhysicalBase + VirtualMemoryTable[1].Length;
+    VirtualMemoryTable[Index].PhysicalBase = VirtualMemoryTable[1].PhysicalBase + VirtualMemoryTable[1].Length;
     VirtualMemoryTable[Index].Length         = FixedPcdGet64 (PcdDpaa2McHighRamSize);
   } else {
-    VirtualMemoryTable[++Index].PhysicalBase = VirtualMemoryTable[0].PhysicalBase + VirtualMemoryTable[0].Length;
+    VirtualMemoryTable[Index].PhysicalBase = VirtualMemoryTable[0].PhysicalBase + VirtualMemoryTable[0].Length;
     VirtualMemoryTable[Index].Length         = FixedPcdGet64 (PcdDpaa2McLowRamSize);
   }
 
   VirtualMemoryTable[Index].VirtualBase    = VirtualMemoryTable[Index].PhysicalBase;
-  VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
-
-  BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_RESERVED,
-      EFI_RESOURCE_ATTRIBUTE_PRESENT,
-      VirtualMemoryTable[Index].VirtualBase,
-      VirtualMemoryTable[Index].Length
-  );
+  VirtualMemoryTable[Index++].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
   // Map for PCIe. 6 PCI at equal space
   for (I = 0; I < 6; I++) {
     // PCIe1
-    VirtualMemoryTable[++Index].PhysicalBase = FixedPcdGet64 (PcdPciExp1BaseAddr) + I * FixedPcdGet64 (PcdPciExp1BaseSize);
+    VirtualMemoryTable[Index].PhysicalBase = FixedPcdGet64 (PcdPciExp1BaseAddr) + I * FixedPcdGet64 (PcdPciExp1BaseSize);
     VirtualMemoryTable[Index].VirtualBase  = VirtualMemoryTable[Index].PhysicalBase;
     VirtualMemoryTable[Index].Length       = FixedPcdGet64 (PcdPciExp1BaseSize);
-    VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
-
-    BuildResourceDescriptorHob (
-        EFI_RESOURCE_MEMORY_MAPPED_IO,
-        EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE,
-        VirtualMemoryTable[Index].VirtualBase,
-        VirtualMemoryTable[Index].Length
-    );
+    VirtualMemoryTable[Index++].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
   }
 
   // DPAA2 MC Portals region
-  VirtualMemoryTable[++Index].PhysicalBase = FixedPcdGet64 (PcdDpaa2McPortalBaseAddr);
+  VirtualMemoryTable[Index].PhysicalBase = FixedPcdGet64 (PcdDpaa2McPortalBaseAddr);
   VirtualMemoryTable[Index].VirtualBase  = FixedPcdGet64 (PcdDpaa2McPortalBaseAddr);
   VirtualMemoryTable[Index].Length       = FixedPcdGet64 (PcdDpaa2McPortalSize);
-  VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
-
-  BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_MAPPED_IO,
-      EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE,
-      VirtualMemoryTable[Index].VirtualBase,
-      VirtualMemoryTable[Index].Length
-  );
+  VirtualMemoryTable[Index++].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
   // DPAA2 NI Portals region
-  VirtualMemoryTable[++Index].PhysicalBase = FixedPcdGet64 (PcdDpaa2NiPortalsBaseAddr);
+  VirtualMemoryTable[Index].PhysicalBase = FixedPcdGet64 (PcdDpaa2NiPortalsBaseAddr);
   VirtualMemoryTable[Index].VirtualBase  = FixedPcdGet64 (PcdDpaa2NiPortalsBaseAddr);
   VirtualMemoryTable[Index].Length       = FixedPcdGet64 (PcdDpaa2NiPortalsSize);
-  VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
-
-  BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_MAPPED_IO,
-      EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE,
-      VirtualMemoryTable[Index].VirtualBase,
-      VirtualMemoryTable[Index].Length
-  );
+  VirtualMemoryTable[Index++].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
   // DPAA2 QBMAN Portals - cache enabled region
-  VirtualMemoryTable[++Index].PhysicalBase = FixedPcdGet64 (PcdDpaa2QBmanPortalsBaseAddr);
+  VirtualMemoryTable[Index].PhysicalBase = FixedPcdGet64 (PcdDpaa2QBmanPortalsBaseAddr);
   VirtualMemoryTable[Index].VirtualBase  = FixedPcdGet64 (PcdDpaa2QBmanPortalsBaseAddr);
   VirtualMemoryTable[Index].Length       = FixedPcdGet64 (PcdDpaa2QBmanPortalsCacheSize);
-  VirtualMemoryTable[Index].Attributes   = CacheAttributes;
-
-  BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_MAPPED_IO,
-      EFI_RESOURCE_ATTRIBUTE_WRITE_THROUGH_CACHEABLE,
-      VirtualMemoryTable[Index].VirtualBase,
-      VirtualMemoryTable[Index].Length
-  );
+  VirtualMemoryTable[Index++].Attributes   = CacheAttributes;
 
   // DPAA2 QBMAN Portals - cache inhibited region
-  VirtualMemoryTable[++Index].PhysicalBase = FixedPcdGet64 (PcdDpaa2QBmanPortalsBaseAddr) + FixedPcdGet64 (PcdDpaa2QBmanPortalsCacheSize);
+  VirtualMemoryTable[Index].PhysicalBase = FixedPcdGet64 (PcdDpaa2QBmanPortalsBaseAddr) + FixedPcdGet64 (PcdDpaa2QBmanPortalsCacheSize);
   VirtualMemoryTable[Index].VirtualBase  = FixedPcdGet64 (PcdDpaa2QBmanPortalsBaseAddr) + FixedPcdGet64 (PcdDpaa2QBmanPortalsCacheSize);
   VirtualMemoryTable[Index].Length       = FixedPcdGet64 (PcdDpaa2QBmanPortalSize) - FixedPcdGet64 (PcdDpaa2QBmanPortalsCacheSize);
-  VirtualMemoryTable[Index].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
-
-  BuildResourceDescriptorHob (
-      EFI_RESOURCE_MEMORY_MAPPED_IO,
-      EFI_RESOURCE_ATTRIBUTE_UNCACHEABLE,
-      VirtualMemoryTable[Index].VirtualBase,
-      VirtualMemoryTable[Index].Length
-  );
+  VirtualMemoryTable[Index++].Attributes   = ARM_MEMORY_REGION_ATTRIBUTE_DEVICE;
 
   // End of Table
-  VirtualMemoryTable[++Index].PhysicalBase = 0;
-  VirtualMemoryTable[Index].VirtualBase  = 0;
-  VirtualMemoryTable[Index].Length       = 0;
-  VirtualMemoryTable[Index].Attributes   = (ARM_MEMORY_REGION_ATTRIBUTES)0;
+  ZeroMem (&VirtualMemoryTable[Index], sizeof (ARM_MEMORY_REGION_DESCRIPTOR));
 
-  ASSERT ((Index + 1) <= MAX_VIRTUAL_MEMORY_MAP_DESCRIPTORS);
+  ASSERT (Index < MAX_VIRTUAL_MEMORY_MAP_DESCRIPTORS);
 
   *VirtualMemoryMap = VirtualMemoryTable;
 }

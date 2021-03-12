@@ -192,7 +192,6 @@ I2cDxeEntryPoint (
   )
 {
   EFI_STATUS                Status;
-  EFI_GCD_MEMORY_SPACE_DESCRIPTOR desp = {0};
   UINT64                    MemoryAttributes = EFI_MEMORY_UC | EFI_MEMORY_RUNTIME;
 
 
@@ -211,17 +210,12 @@ I2cDxeEntryPoint (
                 );
 
   // Declare the controller as EFI_MEMORY_RUNTIME
-  Status = gDS->GetMemorySpaceDescriptor((EFI_PHYSICAL_ADDRESS)mI2cRegs, &desp);
-  if (EFI_ERROR (Status)) {
-    Status = gDS->AddMemorySpace (
-               EfiGcdMemoryTypeMemoryMappedIo,
-               (EFI_PHYSICAL_ADDRESS)mI2cRegs,
-               (SIZE_64KB),
-               MemoryAttributes 
-             );
-  } else {
-    MemoryAttributes |= desp.Attributes;
-  }
+  Status = gDS->AddMemorySpace (
+             EfiGcdMemoryTypeMemoryMappedIo,
+             (EFI_PHYSICAL_ADDRESS)mI2cRegs,
+             (SIZE_64KB),
+             MemoryAttributes 
+           );
 
   if (EFI_ERROR (Status)) {
     return Status;
