@@ -337,9 +337,8 @@ SpiNorVirtualNotifyEvent (
   IN VOID             *Context
   )
 {
-  SPI_NOR_FLASH_CONTEXT       *SpiNorContext;
+  SPI_NOR_FLASH_CONTEXT       *SpiNorContext = Context;
 
-  SpiNorContext = (SPI_NOR_FLASH_CONTEXT *)Context;
 
   // The other elements of SpiIo would be relocated by SPI Bus layer
   EfiConvertPointer (0x0, (VOID**)&SpiNorContext->SpiIo);
@@ -386,6 +385,7 @@ SpiNorFlashCreateContext (
 )
 {
   BOOLEAN                               ContainVariableStorage;
+  SPI_NOR_FLASH_CONTEXT                 *Context;
   SFDP_FLASH_PARAM                      *ParamTable;
   CONST SPI_FLASH_CONFIGURATION_DATA    *ConfigData;
   EFI_STATUS                            Status;
@@ -394,7 +394,8 @@ SpiNorFlashCreateContext (
   ParamTable = SpiNorParams->ParamTable;
   ConfigData = SpiIo->SpiPeripheral->ConfigurationData;
   ContainVariableStorage = FALSE;
-  *SpiNorContext = NULL;
+
+  ASSERT(SpiNorContext != NULL);
 
   if (ConfigData->DeviceBaseAddress) {
     ContainVariableStorage = (ConfigData->DeviceBaseAddress <= PcdGet64 (PcdFlashNvStorageVariableBase64)) &&
@@ -407,25 +408,23 @@ SpiNorFlashCreateContext (
     goto ErrorExit;
   }
 
-  *SpiNorContext = (SPI_NOR_FLASH_CONTEXT *)AllocateRuntimeCopyPool (
-                                              sizeof (SPI_NOR_FLASH_CONTEXT),
-                                              &mSpiNorFlashContextTemplate
-                                              );
-  if (*SpiNorContext == NULL) {
+  Context = AllocateRuntimeCopyPool (sizeof (SPI_NOR_FLASH_CONTEXT),
+                                     &mSpiNorFlashContextTemplate);
+  if (Context == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
   }
 
-  (*SpiNorContext)->ShadowBuffer = AllocateRuntimeZeroPool (SFDP_PARAM_ERASE_SIZE(ParamTable));
-  if ((*SpiNorContext)->ShadowBuffer == NULL) {
+  Context->ShadowBuffer = AllocateRuntimeZeroPool (SFDP_PARAM_ERASE_SIZE(ParamTable));
+  if (Context->ShadowBuffer == NULL) {
     Status = EFI_OUT_OF_RESOURCES;
     goto ErrorExit;
   }
 
-  (*SpiNorContext)->SpiIo = SpiIo;
-  (*SpiNorContext)->SpiNorParams = SpiNorParams;
+  Context->SpiIo = SpiIo;
+  Context->SpiNorParams = SpiNorParams;
 
-  Status = SpiNorFlashFvbInitialize (*SpiNorContext);
+  Status = SpiNorFlashFvbInitialize (Context);
   if (EFI_ERROR (Status)) {
     goto ErrorExit;
   }
@@ -437,21 +436,23 @@ SpiNorFlashCreateContext (
                   EVT_NOTIFY_SIGNAL,
                   TPL_NOTIFY,
                   SpiNorVirtualNotifyEvent,
-                  (VOID *)*SpiNorContext,
+                  Context,
                   &gEfiEventVirtualAddressChangeGuid,
-                  &(*SpiNorContext)->SpiNorVirtualAddressEvent
+                  &Context->SpiNorVirtualAddressEvent
                   );
   ASSERT_EFI_ERROR (Status);
 
+  *SpiNorContext = Context;
+
 ErrorExit:
   if (EFI_ERROR (Status)) {
-    if (*SpiNorContext) {
-      if ((*SpiNorContext)->ShadowBuffer) {
-        FreePool ((*SpiNorContext)->ShadowBuffer);
+    if (Context) {
+      if (Context->ShadowBuffer) {
+        FreePool (Context->ShadowBuffer);
       }
 
-      FreePool (*SpiNorContext);
-      *SpiNorContext = NULL;
+      FreePool (Context);
+      Context = NULL;
     }
   }
 
