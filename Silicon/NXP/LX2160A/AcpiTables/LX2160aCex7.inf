@@ -39,3 +39,4 @@
  
 [FixedPcd]
   gArmPlatformTokenSpaceGuid.PcdSerialDbgRegisterBase
+  gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McHighRamSize
