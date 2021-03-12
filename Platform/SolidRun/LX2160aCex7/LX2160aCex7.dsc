@@ -214,11 +214,15 @@
   #
 !if $(SECURE_BOOT_ENABLE) == TRUE
   ArmPkg/Drivers/MmCommunicationOpteeDxe/MmCommunication.inf {
-      <LibraryClasses>
+    <LibraryClasses>
       OpteeLib|ArmPkg/Library/OpteeLib/OpteeLib.inf
       NULL|StandaloneMmPkg/Library/VariableMmDependency/VariableMmDependency.inf
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
-  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf
+  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf {
+    <LibraryClasses>
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
+  }
 !else
   MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
   MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf{
@@ -240,6 +244,7 @@
 !else
       RealTimeClockLib|Silicon/NXP/Library/Pcf2129RtcLib/Pcf2129RtcLib.inf
 !endif
+      DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
   }
   Silicon/NXP/Drivers/UsbHcdInitDxe/UsbHcd.inf
   Silicon/NXP/Drivers/PciCpuIo2Dxe/PciCpuIo2Dxe.inf
