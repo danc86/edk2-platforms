@@ -33,7 +33,6 @@ Scope(_SB)
       ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
       Package () {
         Package () {"dr_mode", "host"}, // Mode of controller
-        Package () {"snps,quirk-frame-length-adjustment", 0x20},
         Package () {"snps,dis_rxdet_inp3_quirk",1},
       }
     })
@@ -88,7 +87,6 @@ Scope(_SB)
       ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
       Package () {
         Package () {"dr_mode", "host"}, // Mode of controller
-        Package () {"snps,quirk-frame-length-adjustment", 0x20},
         Package () {"snps,dis_rxdet_inp3_quirk",1},
       }
     })

@@ -19,9 +19,6 @@
 
 #define PCF2129_CTRL3_BIT_BLF       BIT2    /* Battery Low Flag*/
 
-// Define EPOCH (1998-JANUARY-01) in the Julian Date representation
-#define EPOCH_JULIAN_DATE           2450815
-
 typedef struct {
   UINT8  Control[3];
   UINT8  Seconds;

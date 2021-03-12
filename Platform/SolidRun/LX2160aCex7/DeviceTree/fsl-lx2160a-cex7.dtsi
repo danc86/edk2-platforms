@@ -141,6 +141,7 @@
 
 &fspi {
   status = "okay";
+  uefi-runtime;
 
   flash@0 {
     #address-cells = <1>;
@@ -152,6 +153,7 @@
     /* The following setting enables 1-1-8 (CMD-ADDR-DATA) mode */
     spi-rx-bus-width = <8>;
     spi-tx-bus-width = <1>;
+    uefi-runtime;
   };
 };
 

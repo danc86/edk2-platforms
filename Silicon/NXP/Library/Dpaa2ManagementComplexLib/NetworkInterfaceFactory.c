@@ -622,11 +622,11 @@ Dpaa2McBindDpmacToDpni (
   int State = 0;
 
   ZeroMem (DpmacEndpoint, sizeof (struct dprc_endpoint));
-  AsciiStrCpy (DpmacEndpoint->type, "dpmac");
+  AsciiStrCpyS (DpmacEndpoint->type, 128, "dpmac");
   DpmacEndpoint->id = Dpaa2NetInterface->DpmacId;
 
   ZeroMem (DpniEndpoint, sizeof (struct dprc_endpoint));
-  AsciiStrCpy (DpniEndpoint->type, "dpni");
+  AsciiStrCpyS (DpniEndpoint->type, 128,  "dpni");
   DpniEndpoint->id = Dpaa2NetInterface->DpniId;
 
   McFlibError = dprc_connect (DprcMcIo,

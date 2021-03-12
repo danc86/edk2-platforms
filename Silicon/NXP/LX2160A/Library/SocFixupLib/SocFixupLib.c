@@ -161,6 +161,7 @@ UINT32
 SocGetSvr (
   )
 {
+  EFI_STATUS	Status;
   CCSR_GUR     *GurBase;
   UINT32        Svr;
 
@@ -170,7 +171,8 @@ SocGetSvr (
   Svr = GurRead ((UINTN)&GurBase->Svr);
 
   /* Store the SVR value */
-  PcdSet32(PcdSocSvr, (UINT32)Svr);
+  Status = PcdSet32S(PcdSocSvr, (UINT32)Svr);
+  ASSERT_EFI_ERROR (Status);
 
   return Svr;
 }

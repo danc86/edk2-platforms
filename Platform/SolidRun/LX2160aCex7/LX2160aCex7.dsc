@@ -220,13 +220,14 @@
   }
   MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf
 !else
-  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf{
-     <LibraryClasses>
-     NULL|MdeModulePkg/Library/VarCheckUefiLib/VarCheckUefiLib.inf
-     NULL|EmbeddedPkg/Library/NvVarStoreFormattedLib/NvVarStoreFormattedLib.inf
-     DebugLib|MdePkg/Library/BaseDebugLibNull/BaseDebugLibNull.inf
-  }
   MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
+  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf{
+    <LibraryClasses>
+      NULL|EmbeddedPkg/Library/NvVarStoreFormattedLib/NvVarStoreFormattedLib.inf
+      AuthVariableLib|MdeModulePkg/Library/AuthVariableLibNull/AuthVariableLibNull.inf
+      NULL|MdeModulePkg/Library/VarCheckUefiLib/VarCheckUefiLib.inf
+      VarCheckLib|MdeModulePkg/Library/VarCheckLib/VarCheckLib.inf
+  }
 !endif
 
   ArmPkg/Drivers/GenericWatchdogDxe/GenericWatchdogDxe.inf
