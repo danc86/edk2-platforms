@@ -48,11 +48,19 @@ typedef struct
 
 typedef struct
 {
+  EFI_ACPI_6_0_IO_REMAPPING_RMR_NODE          RmrNode;
+  EFI_ACPI_6_0_IO_REMAPPING_ID_TABLE          RmrID[2];
+  EFI_ACPI_6_0_IO_REMAPPING_RMR_DESC          RmrDesc[1];
+} NXP_EFI_ACPI_6_0_IO_REMAPPING_RMR_NODE;
+
+typedef struct
+{
   EFI_ACPI_6_0_IO_REMAPPING_TABLE                  Header;
   NXP_EFI_ACPI_6_0_IO_REMAPPING_ITS_NODE           ItsNode;
   NXP_EFI_ACPI_6_0_IO_REMAPPING_SMMU_NODE          SmmuNode;
   NXP_EFI_ACPI_6_0_IO_REMAPPING_RC_NODE            PciRcNode[2];
   NXP_EFI_ACPI_6_0_IO_REMAPPING_NAMED_COMP_NODE    NamedCompNode[9];
+  NXP_EFI_ACPI_6_0_IO_REMAPPING_RMR_NODE           RmrNode;
 } NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE;
 
 #pragma pack ()
