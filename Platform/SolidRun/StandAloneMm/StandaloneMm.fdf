@@ -25,7 +25,7 @@ Size          = 0x00300000|gArmTokenSpaceGuid.PcdFdSize         # The size in by
 ErasePolarity = 1
 
 BlockSize     = 0x00001000
-NumBlocks     = 0x0300
+NumBlocks     = 0x0e00
 
 ################################################################################
 #
@@ -66,7 +66,8 @@ READ_STATUS        = TRUE
 READ_LOCK_CAP      = TRUE
 READ_LOCK_STATUS   = TRUE
 
-  INF StandaloneMmPkg/Core/StandaloneMmCore.inf
+#  INF StandaloneMmPkg/Core/StandaloneMmCore.inf
+  INF StandaloneMmPkg/Core/StandaloneMmCoreRelocatable.inf
   INF Silicon/NXP/Drivers/I2cMm/I2cMm.inf
   INF Silicon/NXP/Drivers/RtcMm/RtcMm.inf
   INF Silicon/NXP/Drivers/EepromFvb/EepromFvb.inf
@@ -102,7 +103,7 @@ READ_LOCK_STATUS   = TRUE
 ############################################################################
 
 [Rule.Common.MM_CORE_STANDALONE]
-  FILE SEC = $(NAMED_GUID) RELOCS_STRIPPED FIXED {
+  FILE SEC = $(NAMED_GUID) FIXED {
     PE32  PE32 Align = Auto             $(INF_OUTPUT)/$(MODULE_NAME).efi
   }
 
