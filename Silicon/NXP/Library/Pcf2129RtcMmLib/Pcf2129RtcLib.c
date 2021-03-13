@@ -24,6 +24,7 @@
 #include <Library/DebugLib.h>
 #include <Library/MemoryAllocationLib.h>
 #include <Library/RealTimeClockLib.h>
+#include <Library/TimeBaseLib.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/UefiLib.h>
 #include <Library/UefiRuntimeLib.h>
@@ -36,35 +37,6 @@
 STATIC EFI_MM_COMMUNICATION2_PROTOCOL  *mMmCommunication2        = NULL;
 STATIC UINT8                           *mPcf2129Header           = NULL;
 STATIC EFI_EVENT                  mRtcVirtualAddrChangeEvent;
-
-/**
-  returns Day of the week [0-6] 0=Sunday
-  Don't try to provide a Year that's before 1998, please !
- **/
-UINTN
-EfiTimeToWday (
-  IN  EFI_TIME  *Time
-  )
-{
-  UINTN MonthDiff;
-  UINTN Year;
-  UINTN Month;
-  UINTN JulianDate;  // Absolute Julian Date representation of the supplied Time
-  UINTN EpochDays;   // Number of days elapsed since EPOCH_JULIAN_DAY
-
-  MonthDiff = (14 - Time->Month) / 12 ;
-  Year = Time->Year + 4800 - MonthDiff;
-  Month = Time->Month + (12*MonthDiff) - 3;
-
-  JulianDate = Time->Day + ((153*Month + 2)/5) + (365*Year) + (Year/4) - (Year/100) + (Year/400) - 32045;
-
-  ASSERT (JulianDate >= EPOCH_JULIAN_DATE);
-  EpochDays = JulianDate - EPOCH_JULIAN_DATE;
-
-   // 4=1/1/1998 was a Thursday
-
-  return (EpochDays + 4) % 7;
-}
 
 /**
   Returns the current time and date information, and the time-keeping capabilities

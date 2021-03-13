@@ -17,9 +17,6 @@
 
 #define PCF2129_CTRL3_BIT_BLF       BIT2    /* Battery Low Flag*/
 
-// Define EPOCH (1998-JANUARY-01) in the Julian Date representation
-#define EPOCH_JULIAN_DATE           2450815
-
 #define FUNCTION_GET_TIME           0
 #define FUNCTION_SET_TIME           1
 
