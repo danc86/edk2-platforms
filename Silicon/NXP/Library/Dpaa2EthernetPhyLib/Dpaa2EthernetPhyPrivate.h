@@ -65,7 +65,7 @@
 /**
  * PHY autonegotiation timeout (milliseconds)
  */
-#define PHY_AUTO_NEGOTIATION_TIMEOUT  5000
+#define PHY_AUTO_NEGOTIATION_TIMEOUT  300
 
 VOID
 Dpaa2PhyRegisterWrite (
