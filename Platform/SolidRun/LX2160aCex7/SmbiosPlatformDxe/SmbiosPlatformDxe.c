@@ -65,7 +65,7 @@ STATIC CONST ARM_TYPE1 mArmDefaultType1 = {
     2,     /* Product Name */
     3,     /* Version */
     4,     /* Serial */
-    { 0x8a95d198, 0x7f46, 0x11e5, { 0xbf,0x8b,0x08,0x00,0x27,0x04,0xd4,0x8e }},    /* UUID */
+    { 0x00000000, 0x0000, 0x0000, { 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00 }},    /* UUID */
     6,     /* Wakeup type */
     0,     /* SKU */
     0,     /* Family */
@@ -298,7 +298,7 @@ STATIC CONST ARM_TYPE9 mArmDefaultType9_1 = {
     0,                 // SlotId
     {1},               // unknown
     {1,0,0},           // PME and SMBUS
-    0x0,               // Segment
+    0x2,               // Segment
     0x0,               // Bus
     0x0,               // DevFunc
   },
@@ -320,7 +320,7 @@ STATIC CONST ARM_TYPE9 mArmDefaultType9_2 = {
     0,                // SlotId
     {1},              // unknown
     {1,0,0},          // PME and SMBUS
-    0x1,              // Segment
+    0x4,              // Segment
     0x0,              // Bus
     0x0,              // DevFunc
   },
