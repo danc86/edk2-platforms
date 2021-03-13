@@ -35,7 +35,7 @@ Scope(\_SB.MCE0.PR09) // 10G
   Name (_DSD, Package () {
     ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
         Package () {
-            Package () {"reg", 8},
+            Package () {"reg", 9},
             Package () {"managed", "in-band-status"},
     }
   })
