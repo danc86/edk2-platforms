@@ -417,7 +417,7 @@ Dpaa2PhyReset (
       return EFI_NOT_READY;
     }
 
-    MicroSecondDelay (1000);
+    MicroSecondDelay (10000);
     TimeoutMsCount --;
   }
 
