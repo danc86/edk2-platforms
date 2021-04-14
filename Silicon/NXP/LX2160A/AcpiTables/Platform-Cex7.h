@@ -124,6 +124,7 @@
 #define I2C5_IT            106
 #define I2C6_IT            107
 #define I2C7_IT            107
+#define I2C0_MUX_CHANNEL_0 0
 #define I2C0_MUX_CHANNEL_1 1
 #define I2C0_MUX_CHANNEL_3 3
 
