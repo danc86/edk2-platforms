@@ -157,10 +157,13 @@ MacReadFromEeprom (
   )
 {
   EFI_STATUS Status;
+  UINT8 MacIndex;
 
-  if (MacAddress == NULL) {
+  if ((MacAddress == NULL) || (MacNo < 1)) {
     return EFI_INVALID_PARAMETER;
   }
+
+  MacIndex = MacNo - 1;
 
   SetMem(MacAddress, 6, 0xFF);
 
@@ -170,25 +173,25 @@ MacReadFromEeprom (
   }
 
   if (IS_VALID_NXID(SystemID->NXSystemID.TagID)) {
-    if (MacNo >= SystemID->NXSystemID.MacSize) {
+    if (MacIndex >= SystemID->NXSystemID.MacSize) {
       return EFI_NOT_FOUND;
     }
 
-    if (!CompareMem (MacAddress, SystemID->NXSystemID.Mac[MacNo], 6)) {
+    if (!CompareMem (MacAddress, SystemID->NXSystemID.Mac[MacIndex], 6)) {
       return EFI_NOT_FOUND;
     }
 
-    CopyMem (MacAddress, SystemID->NXSystemID.Mac[MacNo], 6);
+    CopyMem (MacAddress, SystemID->NXSystemID.Mac[MacIndex], 6);
   } else {
     if (MacNo > SystemID->CCSystemID.MacSize) {
       return EFI_NOT_FOUND;
     }
 
-   if (!CompareMem (MacAddress, SystemID->NXSystemID.Mac[MacNo], 6)) {
+   if (!CompareMem (MacAddress, SystemID->NXSystemID.Mac[MacIndex], 6)) {
       return EFI_NOT_FOUND;
     }
 
-    CopyMem (MacAddress, SystemID->CCSystemID.Mac[MacNo], 6);
+    CopyMem (MacAddress, SystemID->CCSystemID.Mac[MacIndex], 6);
   }
 
   return EFI_SUCCESS;
