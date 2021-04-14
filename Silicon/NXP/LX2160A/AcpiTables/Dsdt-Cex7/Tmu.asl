@@ -116,6 +116,7 @@ Scope(_SB.I2C0)
     }
     Store(One, LEN)
     Store(BUFF, FLD2)
+    SCHN(I2C0_MUX_CHANNEL_0)
     Return (STAT)
   }
 
@@ -125,6 +126,7 @@ Scope(_SB.I2C0)
     Store(0x02, DATA)
     Store(One, LEN)
     Store(BUFF, FLD6)
+    SCHN(I2C0_MUX_CHANNEL_0)
     Return (STAT)
   }
 
@@ -133,6 +135,7 @@ Scope(_SB.I2C0)
     Store(0x88, DATA)
     Store(One, LEN)
     Store(BUFF, FLD5)
+    SCHN(I2C0_MUX_CHANNEL_0)
     Return (STAT)
   }
 */
@@ -153,6 +156,7 @@ Scope(_SB.I2C0)
       If (LEqual(STAT, 0x00)) {
         Local0 = DATA
       }
+      SCHN(I2C0_MUX_CHANNEL_0)
     }
     Return (Local0)
   }
@@ -166,6 +170,7 @@ Scope(_SB.I2C0)
     If (LEqual(STAT, 0x00)) {
       Local0 = DATA
     }
+    SCHN(I2C0_MUX_CHANNEL_0)
     Return (Local0)
   }
 
@@ -175,6 +180,7 @@ Scope(_SB.I2C0)
     Store(One, LEN)
     Store(TMU_FAN_OFF_SPEED, DATA)
     Store(BUFF, FLD4)
+    SCHN(I2C0_MUX_CHANNEL_0)
     Return (STAT)
   }
 
@@ -184,6 +190,7 @@ Scope(_SB.I2C0)
     Store(One, LEN)
     Store(TMU_FAN_LOW_SPEED, DATA)
     Store(BUFF, FLD4)
+    SCHN(I2C0_MUX_CHANNEL_0)
     Return (STAT)
   }
 
@@ -193,6 +200,7 @@ Scope(_SB.I2C0)
     Store(One, LEN)
     Store(TMU_FAN_HIGH_SPEED, DATA)
     Store(BUFF, FLD4)
+    SCHN(I2C0_MUX_CHANNEL_0)
     Return (STAT)
   }
 }
