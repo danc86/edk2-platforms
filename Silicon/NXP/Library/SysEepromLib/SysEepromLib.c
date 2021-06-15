@@ -32,6 +32,30 @@
 SYSTEM_ID  *SystemID;
 STATIC CONST CHAR16  mUniqueMacVariableName[] = L"MacUniqueId";
 
+
+/**
+  Retrieve the TLV tag offset
+
+  If not found return -1
+**/
+STATIC
+INT32
+TLVGetTagOffset (
+  IN UINT8 TagId
+  )
+{
+  UINT32 Offset = 0;
+
+  while ( Offset <= SwapBytes16(SystemID->TLVSystemId.TotalLen) ) {
+    if (SystemID->TLVSystemId.Data[Offset] == TagId) {
+      return (Offset + 2);
+    }
+    Offset += SystemID->TLVSystemId.Data[Offset + 1];
+    Offset += 2; /* Tag and size */
+  }
+  return -1;
+}
+
 /**
   Read EEPROM data
 
@@ -56,14 +80,14 @@ EepromRead (
   )
 {
   EFI_STATUS   Status;
-  UINT32       CalulatedCrc32;
+  UINT32       CalculatedCrc32;
   UINT32       CrcOffset;
   UINT32       CrcStored;
   UINTN        I2cBase;
   UINT64       I2cClock;
 
   Status = EFI_SUCCESS;
-  CalulatedCrc32 = 0;
+  CalculatedCrc32 = 0;
   CrcOffset = 0;
   CrcStored = 0;
   I2cBase = ( EFI_PHYSICAL_ADDRESS)(FixedPcdGet64 (PcdI2c0BaseAddr) +
@@ -108,6 +132,11 @@ EepromRead (
   } else if (IS_VALID_CCID(SystemID->CCSystemID.TagID)) {
     CrcOffset = OFFSET_OF(CC_SYSTEM_ID, Crc32);
     CrcStored = SwapBytes32 (*(UINT32 *)&SystemID->CCSystemID.Crc32);
+  } else if (IS_VALID_TLVID(SystemID->TLVSystemId.TagID)) {
+    INT32 TlvCrcOffset = TLVGetTagOffset(0xfe);
+    if (TlvCrcOffset == -1) return EFI_NOT_FOUND;
+    CrcOffset = TlvCrcOffset + OFFSET_OF(TLV_SYSTEM_ID, Data);
+    CrcStored = SwapBytes32 (*(UINT32 *)&SystemID->TLVSystemId.Data[TlvCrcOffset]);
   } else {
     return EFI_NOT_FOUND;
   }
@@ -116,13 +145,13 @@ EepromRead (
     Status = gBS->CalculateCrc32 (
                     SystemID,
                     CrcOffset,
-                    &CalulatedCrc32
+                    &CalculatedCrc32
                   );
     if (EFI_ERROR(Status)) {
       ZeroMem(SystemID, sizeof (SYSTEM_ID));
       return Status;
     }
-    if (CalulatedCrc32 != CrcStored) {
+    if (CalculatedCrc32 != CrcStored) {
       ZeroMem(SystemID, sizeof (SYSTEM_ID));
       return EFI_CRC_ERROR;
     }
@@ -182,6 +211,26 @@ MacReadFromEeprom (
     }
 
     CopyMem (MacAddress, SystemID->NXSystemID.Mac[MacIndex], 6);
+  } else if (IS_VALID_TLVID(SystemID->TLVSystemId.TagID)) {
+    INT32 MacOffset = TLVGetTagOffset(0x24);
+    INT32 MaxMacsOffset = TLVGetTagOffset(0x2a);
+    UINT16 MaxMacs;
+    UINT16 Low2Bytes;
+    if (MacOffset == -1) return EFI_NOT_FOUND;
+    if (MaxMacs == -1) return EFI_NOT_FOUND;
+
+    if (MacNo > 16) MacNo=MacNo-17; // Create a wrap around
+    // Check max mac addresses allowed
+    MaxMacs = SystemID->TLVSystemId.Data[MaxMacsOffset+1];
+    if (MacNo > MaxMacs) return EFI_NOT_FOUND;
+
+    // Copy the base MAC address
+    CopyMem (MacAddress, &SystemID->TLVSystemId.Data[MacOffset], 6);
+    // Increment it by the MacNo
+    Low2Bytes = SwapBytes16 (((UINT16*)MacAddress)[2]);
+    Low2Bytes += MacNo;
+    ((UINT8*)MacAddress)[4] = (Low2Bytes >> 8) & 0xff;
+    ((UINT8*)MacAddress)[5] = Low2Bytes & 0xff;
   } else {
     if (MacNo > SystemID->CCSystemID.MacSize) {
       return EFI_NOT_FOUND;

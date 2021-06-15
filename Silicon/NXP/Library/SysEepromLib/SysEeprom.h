@@ -20,6 +20,12 @@
                               (TagID[2] == 'I') || (TagID[3] == 'D'))
 #define IS_VALID_CCID(TagID) ((TagID[0] == 'C') || (TagID[1] == 'C') || \
                               (TagID[2] == 'I') || (TagID[3] == 'D'))
+#define IS_VALID_TLVID(TagID) ((TagID[0] == 'T') || (TagID[1] == 'l') || \
+                              (TagID[2] == 'v') || (TagID[3] == 'I') || \
+                              (TagID[4] == 'n') || (TagID[5] == 'f') || \
+                              (TagID[6] == 'o') || (TagID[7] == 0) || \
+			      (TagID[8] == 0x1))
+
 #define EEPROM_NO_FORCE_READ   FALSE
 #define EEPROM_FORCE_READ      TRUE
 
@@ -64,9 +70,21 @@ typedef struct NX_SYSTEM_ID {
 } NX_SYSTEM_ID;
 #pragma pack()
 
+#pragma pack(1)
+// CDS-boards with attached processor daughter cards
+typedef struct TLV_SYSTEM_ID { // Align to 512Byte buffer
+  // Offset in hex
+  UINT8   TagID[8]; // 00-06: TlvInfo string
+  UINT8   Version; // 08 : minor revision
+  UINT16  TotalLen; // 0x09-0x0A : Length
+  UINT8   Data[512-11];
+} TLV_SYSTEM_ID;
+#pragma pack()
+
 typedef union SYSTEM_ID {
   CC_SYSTEM_ID  CCSystemID;
   NX_SYSTEM_ID  NXSystemID;
+  TLV_SYSTEM_ID TLVSystemId;
 } SYSTEM_ID;
 
 /**
