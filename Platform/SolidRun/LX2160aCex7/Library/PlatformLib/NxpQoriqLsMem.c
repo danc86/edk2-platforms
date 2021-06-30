@@ -101,7 +101,7 @@ ArmPlatformGetVirtualMemoryMap (
 
   // MC private DRAM
   if (FixedPcdGetBool (PcdMcHighMemSupport)) {
-    VirtualMemoryTable[Index].PhysicalBase = VirtualMemoryTable[1].PhysicalBase + VirtualMemoryTable[1].Length;
+    VirtualMemoryTable[Index].PhysicalBase = VirtualMemoryTable[1].PhysicalBase - FixedPcdGet64 (PcdDpaa2McHighRamSize);
     VirtualMemoryTable[Index].Length         = FixedPcdGet64 (PcdDpaa2McHighRamSize);
   } else {
     VirtualMemoryTable[Index].PhysicalBase = VirtualMemoryTable[0].PhysicalBase + VirtualMemoryTable[0].Length;

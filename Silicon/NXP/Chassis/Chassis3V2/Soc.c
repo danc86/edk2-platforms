@@ -278,6 +278,7 @@ UpdateDpaaDram (
   }
 
   if (FixedPcdGet64 (PcdDpaa2McHighRamSize)) {
+      DramInfo->DramRegion[1].BaseAddress += FixedPcdGet64 (PcdDpaa2McHighRamSize);
       DramInfo->DramRegion[1].Size -= FixedPcdGet64 (PcdDpaa2McHighRamSize);
   }
 

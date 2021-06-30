@@ -136,8 +136,7 @@ Dpaa2McAllocatePrivateMem (
   GetDramBankInfo (&DramInfo);
 
   if (FixedPcdGetBool (PcdMcHighMemSupport)) {
-    McRamBlock = (VOID *)(DramInfo.DramRegion[1].BaseAddress + DramInfo.DramRegion[1].Size +
-                   FixedPcdGet64 (PcdDpaa2McHighRamSize) - MC_FIXED_SIZE_512MB);
+    McRamBlock = (VOID *)(DramInfo.DramRegion[1].BaseAddress - MC_FIXED_SIZE_512MB);
   } else {
     McRamBlock = (VOID *)(DramInfo.DramRegion[0].BaseAddress + DramInfo.DramRegion[0].Size);
   }
