@@ -43,6 +43,7 @@
 !include Platform/NXP/NxpQoriqLs.dsc
 !include Silicon/NXP/Chassis/Chassis3V2/Chassis3V2.dsc
 !include Silicon/NXP/LX2160A/LX2160A.dsc
+!include MdePkg/MdeLibs.dsc.inc
 
 [LibraryClasses.common]
   TpmMeasurementLib|SecurityPkg/Library/DxeTpmMeasurementLib/DxeTpmMeasurementLib.inf
