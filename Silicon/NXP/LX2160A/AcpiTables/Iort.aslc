@@ -23,7 +23,11 @@ NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE Iort = {
       .CreatorId = EFI_ACPI_ARM_CREATOR_ID,
       .CreatorRevision = EFI_ACPI_ARM_CREATOR_REVISION,
     },
+#if (BIFURCATE_PCIE)
+    .NumNodes = 15,
+#else
     .NumNodes = 14,
+#endif
     .NodeOffset = sizeof (EFI_ACPI_6_0_IO_REMAPPING_TABLE),
     .Reserved = EFI_ACPI_RESERVED_WORD,
   },
@@ -50,7 +54,11 @@ NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE Iort = {
         .Length = sizeof (NXP_EFI_ACPI_6_0_IO_REMAPPING_SMMU_NODE),
         .Revision = 0,
         .Identifier = 0x1,
+#if (BIFURCATE_PCIE)
+        .NumIdMappings = 5,
+#else
         .NumIdMappings = 4,
+#endif
         .IdReference = OFFSET_OF (NXP_EFI_ACPI_6_0_IO_REMAPPING_SMMU_NODE, SmmuID),
       },
       .Base = 0x5000000,
@@ -174,6 +182,15 @@ NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE Iort = {
         .OutputReference = OFFSET_OF (NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE, ItsNode),
         .Flags = 0,
       },
+#if (BIFURCATE_PCIE)
+      {
+        .InputBase = 0x3000,
+        .NumIds = 0,
+        .OutputBase = 0x3000,
+        .OutputReference = OFFSET_OF (NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE, ItsNode),
+        .Flags = 0,
+      },
+#endif
     },
   },
   .PciRcNode[0] = {
@@ -230,13 +247,42 @@ NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE Iort = {
       },
     },
   },
+#if (BIFURCATE_PCIE)
+  .PciRcNode[2] = {
+    .PciRcNode = {
+      .Node = {
+        .Type = EFI_ACPI_IORT_TYPE_ROOT_COMPLEX,
+        .Length = sizeof (NXP_EFI_ACPI_6_0_IO_REMAPPING_RC_NODE),
+        .Revision = 0,
+        .Identifier = 0xe,
+        .NumIdMappings = 1,
+        .IdReference = OFFSET_OF (NXP_EFI_ACPI_6_0_IO_REMAPPING_RC_NODE, PciRcIdMapping),
+      },
+      .CacheCoherent = EFI_ACPI_IORT_MEM_ACCESS_PROP_CCA,
+      .AllocationHints = 0x0,
+      .Reserved = 0x0,
+      .MemoryAccessFlags = EFI_ACPI_IORT_MEM_ACCESS_FLAGS_CPM | EFI_ACPI_IORT_MEM_ACCESS_FLAGS_DACS,
+      .AtsAttribute = 0,
+      .PciSegmentNumber = LX2160A_PCI_SEG2,  // refer to Pci.asl
+    },
+    .PciRcIdMapping = {
+      {
+        .InputBase = 0x0,
+        .NumIds = 0x0,
+        .OutputBase = 0x3000,
+        .OutputReference = OFFSET_OF (NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE, SmmuNode),
+        .Flags = 0,
+      },
+    },
+  },
+#endif
   .NamedCompNode[0] = {
     .NamedNode = {
       .Node = {
         .Type = EFI_ACPI_IORT_TYPE_NAMED_COMP,
         .Length = sizeof (NXP_EFI_ACPI_6_0_IO_REMAPPING_NAMED_COMP_NODE),
         .Revision = 0,
-        .Identifier = 0x4,
+        .Identifier = 0x5,
         .NumIdMappings = 2,
         .IdReference = OFFSET_OF (NXP_EFI_ACPI_6_0_IO_REMAPPING_NAMED_COMP_NODE, NamedID),
       },

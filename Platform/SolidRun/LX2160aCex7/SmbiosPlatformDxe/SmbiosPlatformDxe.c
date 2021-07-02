@@ -295,7 +295,7 @@ STATIC CONST ARM_TYPE9 mArmDefaultType9_1 = {
     SlotDataBusWidth4X,
     SlotUsageAvailable,
     SlotLengthOther,
-    0,                 // SlotId
+    2,                 // SlotId
     {1},               // unknown
     {1,0,0},           // PME and SMBUS
     0x2,               // Segment
@@ -313,11 +313,16 @@ STATIC CONST ARM_TYPE9 mArmDefaultType9_2 = {
       SMBIOS_HANDLE_PI_RESERVED,
     },
     2,
+#if (BIFURCATE_PCIE)
+    SlotTypePciExpressGen3X4,
+    SlotDataBusWidth4X,
+#else
     SlotTypePciExpressGen3X8,
     SlotDataBusWidth8X,
+#endif
     SlotUsageAvailable,
     SlotLengthShort,
-    0,                // SlotId
+    4,                // SlotId
     {1},              // unknown
     {1,0,0},          // PME and SMBUS
     0x4,              // Segment
@@ -326,6 +331,30 @@ STATIC CONST ARM_TYPE9 mArmDefaultType9_2 = {
   },
   TYPE9_STRING
 };
+
+#if (BIFURCATE_PCIE)
+STATIC CONST ARM_TYPE9 mArmDefaultType9_3 = {
+  {
+    { // SMBIOS_STRUCTURE Hdr
+      EFI_SMBIOS_TYPE_SYSTEM_SLOTS, // UINT8 Type
+      sizeof (SMBIOS_TABLE_TYPE9),  // UINT8 Length
+      SMBIOS_HANDLE_PI_RESERVED,
+    },
+    3,
+    SlotTypePciExpressGen3X4,
+    SlotDataBusWidth4X,
+    SlotUsageAvailable,
+    SlotLengthShort,
+    5,                // SlotId
+    {1},              // unknown
+    {1,0,0},          // PME and SMBUS
+    0x5,              // Segment
+    0x0,              // Bus
+    0x0,              // DevFunc
+  },
+  TYPE9_STRING
+};
+#endif
 
 STATIC CONST VOID *LX2Tables[] =
 {

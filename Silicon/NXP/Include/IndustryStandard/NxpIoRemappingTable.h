@@ -58,7 +58,11 @@ typedef struct
   EFI_ACPI_6_0_IO_REMAPPING_TABLE                  Header;
   NXP_EFI_ACPI_6_0_IO_REMAPPING_ITS_NODE           ItsNode;
   NXP_EFI_ACPI_6_0_IO_REMAPPING_SMMU_NODE          SmmuNode;
+#if (BIFURCATE_PCIE)
+  NXP_EFI_ACPI_6_0_IO_REMAPPING_RC_NODE            PciRcNode[3];
+#else
   NXP_EFI_ACPI_6_0_IO_REMAPPING_RC_NODE            PciRcNode[2];
+#endif
   NXP_EFI_ACPI_6_0_IO_REMAPPING_NAMED_COMP_NODE    NamedCompNode[9];
   NXP_EFI_ACPI_6_0_IO_REMAPPING_RMR_NODE           RmrNode;
 } NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE;

@@ -26,6 +26,7 @@
   DEFINE CAPSULE_ENABLE          = FALSE
   DEFINE X64EMU_ENABLE           = FALSE
   DEFINE AARCH64_GOP_ENABLE      = FALSE
+  DEFINE BIFURCATE_PCIE          = FALSE
 
 !ifdef SECURE_BOOT
   DEFINE SECURE_BOOT_ENABLE      = TRUE
@@ -72,6 +73,15 @@
 !if $(NETWORK_TLS_ENABLE) == TRUE
   TlsLib|CryptoPkg/Library/TlsLib/TlsLib.inf
   IntrinsicLib|CryptoPkg/Library/IntrinsicLib/IntrinsicLib.inf
+!endif
+
+!if $(BIFURCATE_PCIE) == TRUE
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS          = -DBIFURCATE_PCIE
+  GCC:*_*_*_PP_FLAGS          = -DBIFURCATE_PCIE
+  GCC:*_*_*_ASLPP_FLAGS       = -DBIFURCATE_PCIE
+  GCC:*_*_*_ASLCC_FLAGS       = -DBIFURCATE_PCIE
+  GCC:*_*_*_VFRPP_FLAGS       = -DBIFURCATE_PCIE
 !endif
 
 [PcdsFeatureFlag.common]
