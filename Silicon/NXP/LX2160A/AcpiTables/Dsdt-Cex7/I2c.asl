@@ -56,16 +56,24 @@ Scope(_SB)
     Name (_DSD, Package () {
       ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
       Package () {
-         Package () {"clock-frequency", CLK},
+         Package () {"uefi-clock-frequency", CLK},
+         Package () {"clock-frequency", 100000},
       }
     })
     Device(MUX0) {
       NAME(_HID, "NXP0002")
+      Name(_CID, "PRP0001")
       Name(_UID, 0)
       Name(_CRS, ResourceTemplate()
       {
         I2CSerialBus(0x77, ControllerInitiated, 100000, AddressingMode7Bit, "\\_SB.I2C0", 0, ResourceConsumer, ,)
       }) // end of CRS for mux device
+      Name (_DSD, Package () {
+             ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+             Package() {
+                     Package() {"compatible", "nxp,pca9547"},
+             }
+      })
      Device (CH01) {
         Name(_ADR, 1)
         Name(_UID, 1)
@@ -119,7 +127,8 @@ Scope(_SB)
     Name (_DSD, Package () {
       ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
       Package () {
-         Package () {"clock-frequency", CLK},
+         Package () {"uefi-clock-frequency", CLK},
+         Package () {"clock-frequency", 100000},
       }
     })
   } // end of i2c device
