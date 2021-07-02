@@ -86,6 +86,15 @@
   gEmbeddedTokenSpaceGuid.PcdDefaultDtPref|FALSE
 
 [PcdsFixedAtBuild.common]
+  # Hex value of degrees Kelvin.  (( Value - 2 ) / 10 ) - 273
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuActiveTempLow|0xCA0  # 50C
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuActiveTempHigh|0xD35 # 64C
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuActiveTempFull|0xDCC # 80C
+
+  # Hex value of PWM Duty, 0 - 255, Value / 255 * 100
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuFanSpeedDefault|0x72 # 45%
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuFanSpeedLow|0x9A     # 60%
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuFanSpeedHigh|0xCC    # 80%
 
 !if $(MC_HIGH_MEM) == TRUE                                        # Management Complex loaded at the end of DDR2
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McHighRamSize|0x20000000      # 2GB (must be 512MB aligned)

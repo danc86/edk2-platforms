@@ -311,3 +311,12 @@
   gNxpQoriqLsTokenSpaceGuid.PcdPciLsGen4Ctrl|FALSE|BOOLEAN|0x000001DC
   gNxpQoriqLsTokenSpaceGuid.PcdPciStreamIdPerCtrl|FALSE|BOOLEAN|0x000001DD
   gNxpQoriqLsTokenSpaceGuid.PcdPciHideRootPort|FALSE|BOOLEAN|0x000001DE
+
+
+[PcdsFixedAtBuild, PcdsPatchableInModule, PcdsDynamic, PcdsDynamicEx]
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuActiveTempLow|0xffff|UINT16|0x00000410
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuActiveTempHigh|0xffff|UINT16|0x00000411
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuActiveTempFull|0xffff|UINT16|0x00000412
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuFanSpeedDefault|0xff|UINT8|0x00000413
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuFanSpeedLow|0xff|UINT8|0x00000414
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuFanSpeedHigh|0xff|UINT8|0x00000415

@@ -164,9 +164,6 @@
 #define TMU_PASSIVE               1           // Cooling policy passive
 #define TMU_PASSIVE_THERSHOLD     3282        // Passive Thershold (54.8C)
 #define TMU_CRITICAL_THERSHOLD    3682        // Critical Thershold (94.8C)
-#define TMU_ACTIVE_LOW_THERSHOLD  3232        // Active low Thershold (50C)
-#define TMU_ACTIVE_HIGH_THERSHOLD 3381        // Active high Thershold (65C)
-#define TMU_ACTIVE_FULL_THERSHOLD 3532        // Active high Thershold (80C)
 #define TMU_TIER_DISABLE_ALL      0x00        // Disable all interrupt
 #define TMU_TIDR_DISABLE_ALL      0x00        // Clear all interrupt
 #define TMU_TMR_DISABLE           0x00        // Disable TMU IP Monitoring mode
@@ -185,9 +182,12 @@
 #define TMU_ENGINEERING_MODE_0    0x51009C00  // TEUMR0 register
 #define TMU_ENGINEERING_MODE_2    0x0800FFFE  // TEUMR2 register
 #define TMU_FAN_1                 1           // FAN 1
-#define TMU_FAN_OFF_SPEED         0x55        // FAN off speed value at 33% PWM (Default)
-#define TMU_FAN_LOW_SPEED         0x80        // FAN low speed value at 50% PWM
-#define TMU_FAN_HIGH_SPEED        0xCC        // FAN high speed value at 80% PWM
+#define TMU_ACTIVE_TEMP_LOW       FixedPcdGet16(PcdTmuActiveTempLow)
+#define TMU_ACTIVE_TEMP_HIGH      FixedPcdGet16(PcdTmuActiveTempHigh)
+#define TMU_ACTIVE_TEMP_FULL      FixedPcdGet16(PcdTmuActiveTempFull)
+#define TMU_FAN_OFF_SPEED         FixedPcdGet8(PcdTmuFanSpeedDefault)
+#define TMU_FAN_LOW_SPEED         FixedPcdGet8(PcdTmuFanSpeedLow)
+#define TMU_FAN_HIGH_SPEED        FixedPcdGet8(PcdTmuFanSpeedHigh)
 
 // DSPI
 #define SPI0_BASE 0x2100000

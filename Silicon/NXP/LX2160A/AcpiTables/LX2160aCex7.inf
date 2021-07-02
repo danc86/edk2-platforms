@@ -36,7 +36,13 @@
   MdeModulePkg/MdeModulePkg.dec
   Silicon/NXP/NxpQoriqLs.dec
   Silicon/NXP/LX2160A/LX2160A.dec
- 
+
 [FixedPcd]
   gArmPlatformTokenSpaceGuid.PcdSerialDbgRegisterBase
   gNxpQoriqLsTokenSpaceGuid.PcdDpaa2McHighRamSize
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuActiveTempLow
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuActiveTempHigh
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuActiveTempFull
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuFanSpeedDefault
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuFanSpeedLow
+  gNxpQoriqLsTokenSpaceGuid.PcdTmuFanSpeedHigh
