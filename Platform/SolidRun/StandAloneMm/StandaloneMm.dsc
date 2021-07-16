@@ -25,6 +25,8 @@
   # LzmaF86
   DEFINE COMPRESSION_TOOL_GUID   = D42AE6BD-1352-4bfb-909A-CA72A6EAE889
 
+!include MdePkg/MdeLibs.dsc.inc
+
 ################################################################################
 #
 # Library Class section - list of all Library Classes needed by this Platform.
@@ -63,9 +65,11 @@
   PeCoffExtraActionLib|StandaloneMmPkg/Library/StandaloneMmPeCoffExtraActionLib/StandaloneMmPeCoffExtraActionLib.inf
 
   # ARM PL011 UART Driver
-  # PL011UartClockLib|ArmPlatformPkg/Library/PL011UartClockLib/PL011UartClockLib.inf
-  # PL011UartLib|ArmPlatformPkg/Library/PL011UartLib/PL011UartLib.inf
-  # SerialPortLib|ArmPlatformPkg/Library/PL011SerialPortLib/PL011SerialPortLib.inf
+!if $(TARGET) != RELEASE
+  PL011UartClockLib|ArmPlatformPkg/Library/PL011UartClockLib/PL011UartClockLib.inf
+  PL011UartLib|ArmPlatformPkg/Library/PL011UartLib/PL011UartLib.inf
+  SerialPortLib|ArmPlatformPkg/Library/PL011SerialPortLib/PL011SerialPortLib.inf
+!endif
 
   #
   # It is not possible to prevent the ARM compiler for generic intrinsic functions.
