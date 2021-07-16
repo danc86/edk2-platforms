@@ -85,6 +85,7 @@
   HobLib|StandaloneMmPkg/Library/StandaloneMmHobLib/StandaloneMmHobLib.inf
   MmServicesTableLib|MdePkg/Library/StandaloneMmServicesTableLib/StandaloneMmServicesTableLib.inf
   MemoryAllocationLib|StandaloneMmPkg/Library/StandaloneMmMemoryAllocationLib/StandaloneMmMemoryAllocationLib.inf
+  BoardInfoLib|Platform/SolidRun/LX2160aCex7/Library/BoardInfoLib/BoardInfoLib.inf
 
   NULL|ArmPkg/Library/CompilerIntrinsicsLib/CompilerIntrinsicsLib.inf
 
@@ -107,20 +108,22 @@
   gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0xff
   gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x0f
 
-  ## PL011 - Serial Terminal
-  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase|0x40418000
-  gEfiMdePkgTokenSpaceGuid.PcdUartDefaultBaudRate|115200
-  gArmPlatformTokenSpaceGuid.PL011UartClkInHz|0xA6E49C0
-  gEfiMdePkgTokenSpaceGuid.PcdUartDefaultReceiveFifoDepth|0
-
   #Secure Storage
   gEfiSecurityPkgTokenSpaceGuid.PcdUserPhysicalPresence|TRUE
   gEfiMdeModulePkgTokenSpaceGuid.PcdMaxVariableSize|0x2000
   gEfiMdeModulePkgTokenSpaceGuid.PcdMaxAuthVariableSize|0x2800
 
-  gNxpQoriqLsTokenSpaceGuid.PcdI2c5BaseAddr|0x40418000
+  gNxpQoriqLsTokenSpaceGuid.PcdGutsBaseAddr|0x40418000
+
+  gNxpQoriqLsTokenSpaceGuid.PcdI2c5BaseAddr|0x40419000
   gNxpQoriqLsTokenSpaceGuid.PcdI2cSize|0x10000
   gNxpQoriqLsTokenSpaceGuid.PcdNumI2cController|8
+
+  ## PL011 - Serial Terminal
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSerialRegisterBase|0x4041A000
+  gEfiMdePkgTokenSpaceGuid.PcdUartDefaultBaudRate|115200
+  gArmPlatformTokenSpaceGuid.PL011UartClkInHz|175000000
+  gEfiMdePkgTokenSpaceGuid.PcdUartDefaultReceiveFifoDepth|0
 
   gNxpQoriqLsTokenSpaceGuid.PcdI2cBus|4
   gNxpQoriqLsTokenSpaceGuid.PcdI2cSpeed|400000
