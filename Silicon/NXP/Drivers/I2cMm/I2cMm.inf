@@ -24,6 +24,7 @@
   DebugLib
   I2cLib
   PcdLib
+  SocClockLib
   StandaloneMmDriverEntryPoint
 
 [Packages]

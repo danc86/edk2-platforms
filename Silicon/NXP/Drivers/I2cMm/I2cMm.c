@@ -10,12 +10,9 @@
 #include <Library/DebugLib.h>
 #include <Library/I2cLib.h>
 #include <Library/MmServicesTableLib.h>
+#include <Library/SocClockLib.h>
 
 #include <Protocol/I2cMaster.h>
-
-// I2c clock based on 750Mhz platform clock
-#define I2C_CLOCK                     87500000
-// #define I2C_CLOCK                  93750000
 
 STATIC EFI_PHYSICAL_ADDRESS mI2cRegs;
 
@@ -40,7 +37,7 @@ SetBusFrequency (
 
   I2cBase = mI2cRegs;
 
-  I2cClock = I2C_CLOCK;
+  I2cClock = SocGetClock (IP_I2C, 0);
 
   I2cInitialize (I2cBase, I2cClock, *BusClockHertz);
 
