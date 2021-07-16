@@ -24,32 +24,48 @@
 **/
 STATIC
 EFI_STATUS
-UpdateDsdtPcie (
+UpdateDsdt (
   IN OUT EFI_ACPI_DESCRIPTION_HEADER  *Table
   )
 {
-  EFI_ACPI_COMMON_HEADER                 *TableHeader;
   EFI_ACPI_WORD_ADDRESS_SPACE_DESCRIPTOR *WordBusRsc;
-  UINT8                                  *DataPtr;
+  UINT8   *CurrPtr;
+  UINT8   *DsdtPointer;
+  UINT32  *Signature;
+  UINT8   *Operation;
+  UINT8   *Value;
 
-  TableHeader = (EFI_ACPI_COMMON_HEADER *)Table;
+  CurrPtr = (UINT8 *) Table;
 
   if (PcdGetBool (PcdPciHideRootPort)) {
-    for (DataPtr = (UINT8 *)(TableHeader + 1);
-         DataPtr < (UINT8 *) ((UINT8 *) TableHeader + TableHeader->Length - 4);
-         DataPtr++) {
-      if (CompareMem(DataPtr, "RBUF", 4) == 0) {
-        DataPtr += 4; // Skip RBUF
-        if (*DataPtr == AML_BUFFER_OP) {
-          DataPtr += 4; // Skip Resource Type, Length etc.
-          WordBusRsc = (EFI_ACPI_WORD_ADDRESS_SPACE_DESCRIPTOR *)DataPtr;
+    for (DsdtPointer = CurrPtr;
+         DsdtPointer <= (CurrPtr + ((EFI_ACPI_COMMON_HEADER *) CurrPtr)->Length);
+         DsdtPointer++
+        ) {
+      Signature = (UINT32 *) DsdtPointer;
+      switch (*Signature) {
+
+      case (SIGNATURE_32 ('_', 'B', 'B', 'N')):
+        Operation = DsdtPointer - 1;
+        if (*Operation == AML_NAME_OP) {
+          Value   = (UINT8 *) DsdtPointer + 4;
+          *Value = 1;
+        }
+        break;
+
+      case (SIGNATURE_32 ('R', 'B', 'U', 'F')):
+        DsdtPointer += 4; // Skip RBUF
+        if (*DsdtPointer == AML_BUFFER_OP) {
+          DsdtPointer += 4; // Skip Resource Type, Length etc.
+          WordBusRsc = (EFI_ACPI_WORD_ADDRESS_SPACE_DESCRIPTOR *)DsdtPointer;
           if (WordBusRsc->GenFlag == AML_RESOURCE_BUS) {
             WordBusRsc->AddrRangeMin = SwapBytes16 (0x1);
             WordBusRsc->AddrLen = SwapBytes16 (0xff);
-            DataPtr = DataPtr + sizeof (EFI_ACPI_WORD_ADDRESS_SPACE_DESCRIPTOR);
-            *(DataPtr) = 0x0;
+            DsdtPointer = DsdtPointer + sizeof (EFI_ACPI_WORD_ADDRESS_SPACE_DESCRIPTOR);
+            *(DsdtPointer) = 0x0;
           }
         }
+        break;
       }
     }
   }
@@ -115,7 +131,7 @@ AcpiPlatformFixup (
       break;
 
     case EFI_ACPI_6_0_DIFFERENTIATED_SYSTEM_DESCRIPTION_TABLE_SIGNATURE:
-      Status = UpdateDsdtPcie (TableHeader);
+      Status = UpdateDsdt (TableHeader);
       break;
 
     default:
