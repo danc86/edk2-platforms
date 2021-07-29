@@ -18,9 +18,8 @@
 
 Scope(_SB)
 {
-  Device(USB0){
-    Name(_HID, "808622B7")
-    Name(_CID, "PNP0D10")
+  Device(XHC0){
+    Name(_HID, "PNP0D10")
     Name(_UID, 0)
     Name(_CCA, 1)
 
@@ -68,13 +67,12 @@ Scope(_SB)
           0x00000000,
           0x00000000
         })
-      } // USB0_RHUB_PRT2
-    } // USB0_RHUB
-  } // USB0
+      } // XHC0_RHUB_PRT2
+    } // XHC0_RHUB
+  } // XHC0
 
-  Device(USB1){
-    Name(_HID, "808622B7")
-    Name(_CID, "PNP0D10")
+  Device(XHC1){
+    Name(_HID, "PNP0D10")
     Name(_UID, 1)
     Name(_CCA, 1)
 
@@ -122,8 +120,8 @@ Scope(_SB)
           0x00000000,
           0x00000000
         })
-      } // USB1_RHUB_PRT2
-    } // USB1_RHUB
-  } // USB1
+      } // XHC1_RHUB_PRT2
+    } // XHC1_RHUB
+  } // XHC1
 }
 

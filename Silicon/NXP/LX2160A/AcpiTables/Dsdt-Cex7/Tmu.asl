@@ -465,7 +465,7 @@ Scope(_TZ)
   Device (FAN2) {
     // Device ID for the FAN
     Name(_HID, EISAID("PNP0C0B"))
-    Name(_UID, 0)
+    Name(_UID, 2)
     Name(_PR0, Package() { FN1F })
   }
 
