@@ -328,7 +328,7 @@ NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE Iort = {
       .MemoryAccessFlags = 0,
       .AddressSizeLimit = 40,
     },
-    .ObjectName = "\\_SB_.USB0", // refer USB.asl
+    .ObjectName = "\\_SB_.XHC0", // refer USB.asl
     .NamedID = {
       {
         .InputBase = NXP_USB0_STREAM_ID,
@@ -356,7 +356,7 @@ NXP_EFI_ACPI_6_0_IO_REMAPPING_TABLE Iort = {
       .MemoryAccessFlags = 0,
       .AddressSizeLimit = 40,
     },
-    .ObjectName = "\\_SB_.USB1", // refer USB.asl
+    .ObjectName = "\\_SB_.XHC1", // refer USB.asl
     .NamedID = {
       {
         .InputBase = NXP_USB1_STREAM_ID,
