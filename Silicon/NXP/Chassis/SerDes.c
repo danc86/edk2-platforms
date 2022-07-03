@@ -147,7 +147,7 @@ LSSerDesMap (
       DEBUG ((DEBUG_ERROR, "Unknown SerDes lane protocol %d\n", LanePrtcl));
       Flag++;
     } else {
-      *SerDesPrtclMap |= BIT (LanePrtcl);
+      *SerDesPrtclMap |= ((UINT64) BIT0 << LanePrtcl);
     }
   }
 
@@ -281,5 +281,5 @@ IsSerDesLaneProtocolConfigured (
     DEBUG ((DEBUG_ERROR, "Unknown SerDes lane protocol Device %d\n", Device));
   }
 
-  return (SerDesPrtclMap & BIT (Device)) != 0 ;
+  return (SerDesPrtclMap & ((UINT64) BIT0 << Device)) != 0 ;
 }
